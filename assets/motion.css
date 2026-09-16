@@ -1,0 +1,87 @@
+/* Motion only. Layout, material and typography live in site.css. */
+.button,.text-button,.transport-button,.chapter {
+  transition:transform 160ms cubic-bezier(.22,1,.36,1),background-color 160ms ease,color 160ms ease;
+}
+.button:active { transform:scale(.98); transition-duration:100ms; }
+.hero-explore-link {transition:transform 180ms var(--ease),border-color 180ms ease}
+.hero-link-icon svg {transition:transform 180ms var(--ease)}
+.hero-explore-link:active {transform:scale(.98);transition-duration:100ms}
+.text-button:active,.transport-button:active,.chapter:active { transform:scale(.97); transition-duration:100ms; }
+.button>span:last-child,.feature-arrow,.chapter svg { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
+.chapter-indicator { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
+.faq-plus { transition:transform 160ms cubic-bezier(.22,1,.36,1); }
+/* The browser owns both open and close interpolation. Unsupported engines keep
+   native details behavior, without a measured-height JavaScript fallback. */
+@supports (interpolate-size:allow-keywords) and selector(::details-content) {
+  .faq-list details { interpolate-size:allow-keywords; }
+  .faq-list details::details-content {
+    block-size:0;
+    overflow:clip;
+    transition:block-size 180ms cubic-bezier(.22,1,.36,1),content-visibility 180ms allow-discrete;
+  }
+  .faq-list details[open]::details-content { block-size:auto; }
+}
+@media(hover:hover) and (pointer:fine) {
+  .button:hover>span:last-child,.feature-links a:hover .feature-arrow { transform:translate(2px,-2px); }
+  .chapter:hover svg { transform:translateY(-1px); }
+}
+html.motion-ready [data-reveal] {
+  opacity:0;
+  transform:translateY(16px);
+  transition:opacity 360ms ease,transform 480ms cubic-bezier(.22,1,.36,1);
+}
+html.motion-ready [data-reveal].is-revealed { opacity:1; transform:none; }
+html.motion-ready [data-reveal].reveal-static { transform:none; }
+html.motion-ready [data-reveal].reveal-immediate,
+html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transition:none; }
+/* Entry lives inside the scroll layers, so the two gestures never fight. */
+@keyframes orbit-arrive {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes orbit-unfold {
+  from { opacity:0; transform:translate(calc(var(--orbit-width) * var(--slot-x) * -.85),calc(44svh - var(--orbit-height) * var(--slot-y))) rotate(-20deg) scale(.9); }
+  to { opacity:1; transform:none; }
+}
+@keyframes horizon-arrive {
+  from { opacity:.2; transform:translateY(18svh); }
+  to { opacity:1; transform:none; }
+}
+@keyframes orbit-letter {
+  from { opacity:0; transform:translateY(18px) rotate(-7deg) scale(.94); }
+  to { opacity:1; transform:none; }
+}
+:root[data-entry="running"] .intro-app>span { animation:orbit-unfold 1260ms var(--delay) cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .horizon-surface { animation:horizon-arrive 1450ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .wordmark-o { animation:orbit-letter 820ms 400ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .wordmark-tail { animation:orbit-arrive 760ms 560ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .hero-description { animation:orbit-arrive 650ms 740ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .hero-actions,:root[data-entry="running"] .platform-note { animation:orbit-arrive 560ms 870ms cubic-bezier(.22,1,.36,1) both; }
+.site-header {transition:opacity 220ms ease,transform 280ms cubic-bezier(.22,1,.36,1)}
+.site-header:has(:focus-visible) {transition:none}
+.menu-toggle>span { transition:transform 200ms cubic-bezier(.22,1,.36,1); }
+.site-header[data-menu-open="true"] nav { animation:orbit-arrive 180ms ease both; }
+.card-link>span:last-child { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
+@media(hover:hover) and (pointer:fine) {
+  .card-link:hover>span:last-child { transform:translate(2px,-2px); }
+}
+:root[data-motion="off"] *,
+:root[data-motion="off"] *:before,
+:root[data-motion="off"] *:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+:root[data-motion="off"] .faq-list details::details-content { transition:none!important; }
+:root[data-motion="off"] [data-reveal] { opacity:1!important; transform:none!important; }
+:root[data-motion="off"] .button,
+:root[data-motion="off"] .hero-explore-link,
+:root[data-motion="off"] .hero-link-icon svg,
+:root[data-motion="off"] .text-button,
+:root[data-motion="off"] .transport-button,
+:root[data-motion="off"] .chapter,
+:root[data-motion="off"] .chapter svg,
+:root[data-motion="off"] .button>span:last-child,
+:root[data-motion="off"] .feature-arrow { transform:none!important; }
+@media(prefers-reduced-motion:reduce) {
+  *,*:before,*:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
+  .faq-list details::details-content { transition:none!important; }
+  [data-reveal] { opacity:1!important; transform:none!important; }
+  .button,.hero-explore-link,.hero-link-icon svg,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
+}

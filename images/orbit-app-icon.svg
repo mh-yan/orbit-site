@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Orbit app icon — black</title>
+  <desc id="description">The black Orbit double-ring mark on a white continuous-corner square. The outer canvas is transparent.</desc>
+  <path d="M 168 16 H 344 C 450 16 496 62 496 168 V 344 C 496 450 450 496 344 496 H 168 C 62 496 16 450 16 344 V 168 C 16 62 62 16 168 16 Z" fill="#FFFFFF"/><defs>
+    <linearGradient id="icon-face" gradientUnits="userSpaceOnUse" x1="195" y1="132" x2="319" y2="380">
+      <stop stop-color="#303033"/>
+      <stop offset=".48" stop-color="#171719"/>
+      <stop offset="1" stop-color="#09090B"/>
+    </linearGradient>
+    <linearGradient id="icon-wall" gradientUnits="userSpaceOnUse" x1="307" y1="163" x2="284" y2="349">
+      <stop stop-color="#050506"/>
+      <stop offset=".46" stop-color="#252528"/>
+      <stop offset="1" stop-color="#737378"/>
+    </linearGradient>
+    <linearGradient id="icon-orbit" gradientUnits="userSpaceOnUse" x1="104" y1="311" x2="447" y2="245">
+      <stop stop-color="#101013"/>
+      <stop offset=".35" stop-color="#303034"/>
+      <stop offset=".62" stop-color="#626268"/>
+      <stop offset="1" stop-color="#252528"/>
+    </linearGradient>
+    <mask id="icon-behind" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="white"/>
+      <circle cx="256" cy="256" r="125.5" fill="black"/>
+    </mask>
+    <clipPath id="icon-body-clip">
+      <path d="M 382 256 A 126 126 0 1 1 130 256 A 126 126 0 1 1 382 256 Z M 340 256 A 84 84 0 1 0 172 256 A 84 84 0 1 0 340 256 Z" clip-rule="evenodd"/>
+    </clipPath>
+  </defs>
+  <!-- Slender rear arc, with the same continuous surface as the front. -->
+  <g mask="url(#icon-behind)">
+    <path d="M 471 256 A 215 66 0 1 1 41 256 A 215 66 0 1 1 471 256 Z M 463 252 A 207 56 0 1 0 49 252 A 207 56 0 1 0 463 252 Z" transform="rotate(-45 256 256)"
+      fill="url(#icon-orbit)" fill-rule="evenodd"/>
+  </g>
+  <!-- The outer circle remains exact; the inner crescent supplies depth. -->
+  <path d="M 382 256 A 126 126 0 1 1 130 256 A 126 126 0 1 1 382 256 Z M 340 256 A 84 84 0 1 0 172 256 A 84 84 0 1 0 340 256 Z" fill="url(#icon-wall)" fill-rule="evenodd"/>
+  <path d="M 382 256 A 126 126 0 1 1 130 256 A 126 126 0 1 1 382 256 Z M 366 256 A 97 97 0 1 0 172 256 A 97 97 0 1 0 366 256 Z" fill="url(#icon-face)" fill-rule="evenodd"/>
+  <!-- Contact shading is clipped to the body, preserving transparent holes. -->
+  <g clip-path="url(#icon-body-clip)">
+    <path d="M 471 256 A 215 66 0 0 1 41 256 L 49 252 A 207 56 0 0 0 463 252 Z" transform="translate(0 2.2) rotate(-45 256 256)" fill="#000000" opacity=".25"/>
+  </g>
+  <!-- A subtly broader foreground ribbon keeps the interlock legible. -->
+  <path d="M 471 256 A 215 66 0 0 1 41 256 L 49 252 A 207 56 0 0 0 463 252 Z" transform="rotate(-45 256 256)" fill="url(#icon-orbit)"/>
+</svg>
