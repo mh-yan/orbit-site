@@ -62,6 +62,11 @@ html[data-lang="zh"] [data-en],html[data-lang="en"] [data-zh] {display:none!impo
 .hero .wordmark {font:600 clamp(148px,15.4vw,218px)/.96 var(--display);letter-spacing:-.065em;padding-right:.05em}
 .wordmark-art {display:inline-flex;align-items:baseline;white-space:nowrap}
 .wordmark-o,.wordmark-tail {display:inline-block;transform-origin:50% 65%}
+.wordmark-o {position:relative}
+.wordmark-o-glyph {display:inline-block}
+.wordmark-tail-frame {display:inline-flex;align-items:baseline;overflow:clip;overflow-clip-margin:6px}
+.wordmark-o-trace {position:absolute;left:-22.5%;top:-24%;width:145%;height:145%;max-width:none;overflow:visible;pointer-events:none;stroke:#858a7f;stroke-width:1.1;opacity:0}
+.entry-orbit-line {stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:0}
 .hero-description {margin-top:24px;font-size:26px;line-height:1.45;letter-spacing:-.035em}
 .hero-definition {margin-top:10px;font-size:14px;line-height:1.6;color:var(--muted)}
 .hero-actions {display:flex;justify-content:center;margin-top:24px}

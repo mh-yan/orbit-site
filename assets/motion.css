@@ -35,33 +35,66 @@ html.motion-ready [data-reveal].is-revealed { opacity:1; transform:none; }
 html.motion-ready [data-reveal].reveal-static { transform:none; }
 html.motion-ready [data-reveal].reveal-immediate,
 html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transition:none; }
-/* Start with the first styled paint. The deferred controller observes these
-   finite animations without restarting them. Entry stays inside scroll layers. */
+/* One first-arrival phrase: the centred O finds its place, its orbit opens,
+   then the reading and action layers land. The longest layer ends at 1750ms.
+   These finite animations start at the first styled paint; their controller
+   only observes completion or accelerates a handoff from the current frame.
+   Outer app/copy/horizon layers remain exclusively owned by journey.js. */
 @keyframes orbit-arrive {
-  from { opacity:0; transform:translateY(8px); }
+  from { opacity:0; transform:translateY(14px); }
   to { opacity:1; transform:none; }
 }
 @keyframes orbit-unfold {
-  from { opacity:0; transform:translate(calc(var(--slot-x) * -24px),clamp(14px,calc(24px - var(--slot-y) * 6px),28px)) rotate(calc(var(--turn) * -.35)) scale(.96); }
+  from {
+    opacity:0;
+    transform:translate(calc(var(--slot-x) * -88px),clamp(20px,calc(42px - var(--slot-y) * 12px),46px)) rotate(calc(var(--turn) * -1.1)) scale(.91);
+  }
+  58% {
+    opacity:1;
+    transform:translate(calc(var(--slot-x) * -22px),3px) rotate(calc(var(--turn) * -.16)) scale(.988);
+  }
   to { opacity:1; transform:none; }
 }
 @keyframes horizon-arrive {
-  from { opacity:.65; transform:translateY(36px); }
+  from { opacity:.28; transform:translateY(24px) scaleX(.82); }
   to { opacity:1; transform:none; }
 }
-@keyframes orbit-letter {
-  from { opacity:0; transform:translateY(12px) rotate(-4deg) scale(.98); }
+@keyframes orbit-o-arrive {
+  0%,12% { transform:translate(.78em,-.045em); }
+  to { transform:none; }
+}
+@keyframes orbit-o-depth {
+  from { opacity:.88; transform:perspective(600px) rotateY(-22deg) rotateZ(-5deg) scale(.94); }
+  28% { opacity:1; }
   to { opacity:1; transform:none; }
 }
-:root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 760ms calc(var(--delay) * .6) cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 900ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-o { animation:orbit-letter 700ms 60ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-tail { animation:orbit-arrive 660ms 110ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 480ms 180ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 460ms 240ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-actions,:root.js:not([data-entry="complete"]) .platform-note { animation:orbit-arrive 460ms 300ms cubic-bezier(.22,1,.36,1) both; }
-/* A focused action is usable immediately while decorative siblings settle. */
-:root.js:not([data-entry="complete"]) .hero-actions:focus-within { animation:none; }
+@keyframes orbit-trace {
+  from { opacity:0; transform:rotate(-12deg) scale(.78); }
+  22% { opacity:.5; }
+  56% { opacity:.32; }
+  to { opacity:0; transform:rotate(10deg) scale(1.05); }
+}
+@keyframes orbit-word-reveal {
+  from { opacity:0; transform:translate(-.06em,.38em) rotate(2deg); }
+  to { opacity:1; transform:none; }
+}
+.wordmark-o-glyph { transform-origin:50% 65%; }
+.wordmark-o-trace { transform-origin:50% 50%; }
+.horizon-surface { transform-origin:50% 0; }
+:root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 800ms calc(410ms + var(--delay)) cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 1450ms 80ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-o { animation:orbit-o-arrive 1040ms cubic-bezier(.65,0,.35,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-o-glyph { animation:orbit-o-depth 1020ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-o-trace { animation:orbit-trace 1180ms 30ms cubic-bezier(.4,0,.2,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-tail { animation:orbit-word-reveal 620ms 650ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 620ms 950ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 540ms 1070ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-actions,:root.js:not([data-entry="complete"]) .platform-note { animation:orbit-arrive 530ms 1220ms cubic-bezier(.22,1,.36,1) both; }
+/* A focused or pressed action becomes visible synchronously; decorative
+   siblings can continue without delaying focus, scrolling, or activation. */
+:root.js:not([data-entry="complete"]) .hero-actions:focus-within,
+:root.js:not([data-entry="complete"]) .hero-actions:has(:active),
+:root.js:not([data-entry="complete"]) .hero-actions[data-entry-exposed="true"] { animation:none; }
 .site-header {transition:opacity 200ms cubic-bezier(.22,1,.36,1),transform 240ms cubic-bezier(.22,1,.36,1)}
 .site-header:has(:focus-visible) {transition:none}
 .menu-toggle>span:before,.menu-toggle>span:after { transition:transform 200ms cubic-bezier(.22,1,.36,1); }
@@ -112,13 +145,13 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
   to { opacity:1; transform:none; }
 }
 :root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-track {
-  animation:crest-unfold 640ms 170ms cubic-bezier(.22,1,.36,1) both;
+  animation:crest-unfold 420ms 1260ms cubic-bezier(.22,1,.36,1) both;
 }
 :root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-planet {
-  animation:crest-centre 560ms 170ms cubic-bezier(.22,1,.36,1) both;
+  animation:crest-centre 360ms 1260ms cubic-bezier(.22,1,.36,1) both;
 }
 :root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-dot {
-  animation:crest-settle 460ms 350ms cubic-bezier(.22,1,.36,1) both;
+  animation:crest-settle 350ms 1400ms cubic-bezier(.22,1,.36,1) both;
 }
 @media(hover:hover) and (pointer:fine) {
   :root.js .hero-explore-link:hover:not(:focus-visible) .hero-link-icon svg.hero-orbit-crest {
@@ -129,7 +162,8 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
   transform:none;
   transition:none;
 }
-.hero-explore-link:focus-visible .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
+.hero-explore-link:focus-visible .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot),
+.hero-actions[data-entry-exposed="true"] .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
   animation:none!important;
 }
 
