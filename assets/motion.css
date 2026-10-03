@@ -51,15 +51,16 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
   from { opacity:0; transform:translateY(18px) rotate(-7deg) scale(.94); }
   to { opacity:1; transform:none; }
 }
-:root[data-entry="running"] .intro-app>span { animation:orbit-unfold 1260ms var(--delay) cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .horizon-surface { animation:horizon-arrive 1450ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .wordmark-o { animation:orbit-letter 820ms 400ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .wordmark-tail { animation:orbit-arrive 760ms 560ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .hero-description { animation:orbit-arrive 650ms 740ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .hero-actions,:root[data-entry="running"] .platform-note { animation:orbit-arrive 560ms 870ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .intro-app>span { animation:orbit-unfold 860ms var(--delay) cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .horizon-surface { animation:horizon-arrive 1050ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .wordmark-o { animation:orbit-letter 680ms 140ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .wordmark-tail { animation:orbit-arrive 600ms 250ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .hero-description { animation:orbit-arrive 520ms 410ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .hero-definition { animation:orbit-arrive 500ms 490ms cubic-bezier(.22,1,.36,1) both; }
+:root[data-entry="running"] .hero-actions,:root[data-entry="running"] .platform-note { animation:orbit-arrive 460ms 590ms cubic-bezier(.22,1,.36,1) both; }
 .site-header {transition:opacity 220ms ease,transform 280ms cubic-bezier(.22,1,.36,1)}
 .site-header:has(:focus-visible) {transition:none}
-.menu-toggle>span { transition:transform 200ms cubic-bezier(.22,1,.36,1); }
+.menu-toggle>span:before,.menu-toggle>span:after { transition:transform 200ms cubic-bezier(.22,1,.36,1); }
 .site-header[data-menu-open="true"] nav { animation:orbit-arrive 180ms ease both; }
 .card-link>span:last-child { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
 @media(hover:hover) and (pointer:fine) {

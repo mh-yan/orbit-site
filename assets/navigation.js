@@ -6,7 +6,6 @@
   var nav = document.getElementById('site-navigation');
   var tabs = document.querySelector('.chapter-list');
   var mobile = window.matchMedia('(max-width: 640px)');
-  var horizontalTabs = window.matchMedia('(max-width: 800px)');
   var open = false;
   var marker = document.getElementById('nav-reveal-point');
   function syncElevation() {
@@ -33,6 +32,9 @@
   document.addEventListener('click', function (event) {
     if (open && !header.contains(event.target)) setOpen(false, false);
   });
+  header.addEventListener('focusout', function (event) {
+    if (open && event.relatedTarget && !header.contains(event.relatedTarget)) setOpen(false, false);
+  });
   nav.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () {
       if (!open) return;
@@ -41,13 +43,23 @@
       if (target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); }
     });
   });
+  function syncTabOverflow() {
+    tabs.dataset.overflowStart = String(tabs.scrollLeft > 3);
+    tabs.dataset.overflowEnd = String(tabs.scrollWidth - tabs.clientWidth - tabs.scrollLeft > 3);
+  }
+  function syncTabOrientation() {
+    var direction = window.getComputedStyle(tabs).flexDirection;
+    tabs.setAttribute('aria-orientation', direction === 'column' || direction === 'column-reverse' ? 'vertical' : 'horizontal');
+    syncTabOverflow();
+  }
   function syncLayout() {
     if (!mobile.matches) setOpen(false, false);
     else if (!open && nav.contains(document.activeElement)) button.focus({ preventScroll: true });
-    tabs.setAttribute('aria-orientation', horizontalTabs.matches ? 'horizontal' : 'vertical');
+    syncTabOrientation();
   }
   mobile.addEventListener('change', syncLayout);
-  horizontalTabs.addEventListener('change', syncLayout);
+  window.addEventListener('resize', syncTabOrientation, { passive: true });
+  tabs.addEventListener('scroll', syncTabOverflow, { passive: true });
   document.addEventListener('orbit:preferenceschange', label);
   if (marker && 'IntersectionObserver' in window) {
     var elevationObserver = new IntersectionObserver(syncElevation, { threshold: 0 });

@@ -6,6 +6,7 @@
   var root = document.documentElement;
   var hero = document.getElementById('hero');
   if (!hero || typeof Element.prototype.animate !== 'function') return;
+  var heroCopy = hero.querySelector('.hero-copy');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   var shortScreen = window.matchMedia('(max-height: 600px)');
   var connection = navigator.connection;
@@ -18,6 +19,8 @@
   var nativeTimeline = false;
   var progress = 0;
   var initialized = false;
+  var focusAnimation = null;
+  var focusFallback = false;
   var definitions = [
     ['.hero-horizon', [
       { transform: 'translateY(0)', offset: 0 },
@@ -50,18 +53,50 @@
     if (!nativeTimeline) animations.forEach(function (animation) { animation.currentTime = progress * 1000; });
   }
   function schedule() {
-    if (enabled && visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
+    if (enabled && !nativeTimeline && visible && !document.hidden && !frame) frame = requestAnimationFrame(update);
+  }
+  function clearFocus() {
+    if (focusAnimation) focusAnimation.cancel();
+    focusAnimation = null;
+    if (focusFallback) heroCopy.style.removeProperty('opacity');
+    focusFallback = false;
+  }
+  function protectFocus() {
+    if (!enabled || !heroCopy.contains(document.activeElement)) return;
+    clearFocus();
+    try {
+      // Additive opacity keeps the live scroll timeline underneath. A focused
+      // link stays fully visible, including when it is already in the viewport.
+      focusAnimation = heroCopy.animate([{ opacity: 1 }, { opacity: 1 }], { duration: 1, fill: 'both', composite: 'add' });
+      if (focusAnimation.effect && focusAnimation.effect.composite !== 'add') throw new Error('Additive animation unavailable');
+    } catch (_) {
+      clearFocus();
+      heroCopy.style.setProperty('opacity', '1', 'important');
+      focusFallback = true;
+    }
+  }
+  function releaseFocus() {
+    if (focusFallback || !enabled) { clearFocus(); return; }
+    if (!focusAnimation) return;
+    var previous = focusAnimation;
+    // Release only the added contribution; scrolling can continue underneath
+    // without a stale opacity endpoint or another requestAnimationFrame loop.
+    focusAnimation = heroCopy.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: 'ease-out', composite: 'add' });
+    previous.cancel();
+    var release = focusAnimation;
+    release.onfinish = function () { if (focusAnimation === release) clearFocus(); };
   }
   function clear() {
     cancelAnimationFrame(frame); frame = 0;
+    clearFocus();
     animations.forEach(function (animation) { animation.cancel(); });
     animations = [];
   }
   function buildAnimations() {
     var timeline;
     nativeTimeline = typeof window.ViewTimeline === 'function';
-    if (nativeTimeline) timeline = new ViewTimeline({ subject: hero, axis: 'block', inset: '0px' });
     try {
+      if (nativeTimeline) timeline = new ViewTimeline({ subject: hero, axis: 'block', inset: '0px' });
       definitions.forEach(function (definition) {
         var options = nativeTimeline
           ? { timeline: timeline, rangeStart: 'exit 0%', rangeEnd: 'exit 100%', fill: 'both', easing: 'linear' }
@@ -84,10 +119,12 @@
     if (initialized && next === enabled) return;
     initialized = true; enabled = next;
     clear(); hero.dataset.story = enabled ? 'on' : 'off';
-    if (enabled) { measure(); buildAnimations(); update(); }
+    if (enabled) { measure(); buildAnimations(); update(); protectFocus(); }
     else { hero.dataset.timeline = 'static'; progress = 0; }
   }
   window.addEventListener('scroll', schedule, { passive: true });
+  heroCopy.addEventListener('focusin', protectFocus);
+  heroCopy.addEventListener('focusout', function (event) { if (!heroCopy.contains(event.relatedTarget)) releaseFocus(); });
   window.addEventListener('resize', function () { if (enabled) { measure(); update(); } }, { passive: true });
   document.addEventListener('orbit:preferenceschange', configure);
   reduce.addEventListener('change', configure);

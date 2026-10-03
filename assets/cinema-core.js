@@ -1,12 +1,12 @@
 /* Focus navigation and request ownership for the native recording player. */
 (function (global) {
   'use strict';
-  function nextIndex(index, key, count) {
+  function nextIndex(index, key, count, orientation) {
     if (!Number.isInteger(index) || !Number.isInteger(count) || count < 1 || index < 0 || index >= count) return null;
     if (key === 'Home') return 0;
     if (key === 'End') return count - 1;
-    if (key === 'ArrowDown' || key === 'ArrowRight') return (index + 1) % count;
-    if (key === 'ArrowUp' || key === 'ArrowLeft') return (index + count - 1) % count;
+    if ((key === 'ArrowDown' && orientation !== 'horizontal') || (key === 'ArrowRight' && orientation !== 'vertical')) return (index + 1) % count;
+    if ((key === 'ArrowUp' && orientation !== 'horizontal') || (key === 'ArrowLeft' && orientation !== 'vertical')) return (index + count - 1) % count;
     return null;
   }
   function createRequestGate() {

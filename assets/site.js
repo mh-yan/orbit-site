@@ -7,6 +7,7 @@
   var previousMotion;
   var current = 0;
   var tabs = Array.from(document.querySelectorAll('[data-scene]'));
+  var chapterList = document.querySelector('.chapter-list');
   var panels = Array.from(document.querySelectorAll('.scene'));
   var movies = Array.from(document.querySelectorAll('video'));
   var players = [];
@@ -38,7 +39,7 @@
       if (movie.dataset.src === video.dataset.src) { if (paused) pausedByUser.add(movie); else pausedByUser.delete(movie); }
     });
   }
-  function userPause(video) { markPause(video, true); playerFor(video).pause(); }
+  function userPause(video) { markPause(video, true); playerFor(video).pause(); syncPlayback(); }
   function save() { try { localStorage.setItem('orbit-site-preferences-v3', JSON.stringify({ lang: lang(), motion: userMotion })); } catch (_) {} }
   function pauseAll(except) { players.forEach(function (player) { if (player.video !== except) player.pause(); }); }
   function requestPlayback(video, restart) {
@@ -46,6 +47,7 @@
     // playback. Autoplay cannot replace it while its destination scrolls in.
     pendingScene = { video: video, restart: restart };
     pauseAll(video);
+    syncPlayback();
     if (isVisible(video)) playerFor(video).play(restart);
   }
   function enter(element, from, duration, previous, continuous) {
@@ -67,10 +69,13 @@
   function syncPlayback() {
     var video = activeVideo();
     var running = !video.paused && !video.ended;
-    text(document.getElementById('transport-icon'), running ? 'Ⅱ' : '▷');
-    playButton.setAttribute('aria-label', running ? t('暂停当前章节', 'Pause current chapter') : t('播放当前章节', 'Play current chapter'));
-    playButton.setAttribute('aria-pressed', String(running));
+    var requested = !!(pendingScene && pendingScene.video === video);
+    var engaged = running || requested;
+    text(document.getElementById('transport-icon'), engaged ? 'Ⅱ' : '▷');
+    playButton.setAttribute('aria-label', engaged ? t('暂停当前章节', 'Pause current chapter') : t('播放当前章节', 'Play current chapter'));
+    playButton.setAttribute('aria-pressed', String(engaged));
     playButton.setAttribute('aria-controls', video.id);
+    document.getElementById('cinema-player').setAttribute('aria-busy', String(requested || (running && video.readyState < 3)));
   }
   function makePlayer(video) {
     video.loop = true;
@@ -97,6 +102,7 @@
       var ticket = gate.begin(), promise;
       try { promise = video.play(); } catch (error) { fail(error, ticket); return; }
       if (promise && promise.catch) promise.catch(function (error) { fail(error, ticket); });
+      syncPlayback();
     }
     video.addEventListener('error', function () { if (loaded && video.error) fail(video.error); });
     fallback.addEventListener('error', function () { fallback.hidden = true; });
@@ -107,6 +113,7 @@
     });
     video.addEventListener('play', syncPlayback);
     video.addEventListener('ended', syncPlayback);
+    ['loadstart', 'loadeddata', 'waiting', 'stalled', 'canplay'].forEach(function (event) { video.addEventListener(event, syncPlayback); });
     return { video: video, play: play, pause: pause, translateError: translateError };
   }
   movies.forEach(function (video) { players.push(makePlayer(video)); });
@@ -116,6 +123,17 @@
     if (animate) storyAnimation = enter(story, { opacity: 0.65, transform: 'translateY(4px)' }, 180, storyAnimation, true);
     else { if (storyAnimation) storyAnimation.cancel(); storyAnimation = null; }
   }
+  function revealChapter(tab) {
+    var width = chapterList.clientWidth;
+    if (!width || chapterList.scrollWidth <= width || typeof chapterList.scrollTo !== 'function') return;
+    var currentScroll = chapterList.scrollLeft;
+    var left = tab.offsetLeft - 8, right = tab.offsetLeft + tab.offsetWidth + 8;
+    var destination = left < currentScroll ? left : right > currentScroll + width ? right - width : currentScroll;
+    destination = Math.max(0, Math.min(chapterList.scrollWidth - width, destination));
+    // Only the chapter strip moves. Card links retain the page's native anchor
+    // scroll, and a newer selection replaces any unfinished horizontal scroll.
+    chapterList.scrollTo({ left: destination, behavior: allowed() && Math.abs(destination - currentScroll) > 1 ? 'smooth' : 'auto' });
+  }
   function selectScene(index, play) {
     if (!Number.isInteger(index) || index < 0 || index >= panels.length) return;
     var old = current;
@@ -123,8 +141,9 @@
     current = index; pendingScene = null; pauseAll();
     if (sceneAnimation) sceneAnimation.cancel();
     sceneAnimation = null;
-    document.querySelector('.chapter-list').style.setProperty('--chapter-index', String(index));
+    chapterList.style.setProperty('--chapter-index', String(index));
     tabs.forEach(function (tab, i) { tab.classList.toggle('is-active', i === index); tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; });
+    if (play) revealChapter(tabs[index]);
     // Selection is synchronous: no delayed callback can revive an old chapter.
     panels.forEach(function (panel, i) {
       panel.inert = i !== index; panel.hidden = i !== index;
@@ -144,7 +163,7 @@
     tab.addEventListener('click', function () { selectScene(index, true); });
     tab.addEventListener('keydown', function (event) {
       if (event.altKey || event.metaKey || event.ctrlKey) return;
-      var next = OrbitCinema.nextIndex(index, event.key, tabs.length);
+      var next = OrbitCinema.nextIndex(index, event.key, tabs.length, chapterList.getAttribute('aria-orientation') || 'horizontal');
       if (next === null) return;
       event.preventDefault();
       tabs.forEach(function (button, i) { button.tabIndex = i === next ? 0 : -1; });
@@ -152,8 +171,9 @@
     });
   });
   function toggle(video) {
+    var requested = pendingScene && pendingScene.video === video;
     pendingScene = null;
-    if (!video.paused && !video.ended) userPause(video);
+    if (requested || (!video.paused && !video.ended)) userPause(video);
     else { markPause(video, false); requestPlayback(video, false); }
   }
   playButton.addEventListener('click', function () { toggle(activeVideo()); });
@@ -190,7 +210,7 @@
   }
   function syncPreferences() {
     root.lang = lang() === 'zh' ? 'zh-CN' : 'en';
-    document.title = t('Orbit — 下一步，顺手就到。', 'Orbit — Your next move. Just a flick away.');
+    document.title = t('Orbit · 下一步，顺手就到。', 'Orbit · Your next move. Just a flick away.');
     document.querySelectorAll('[data-label-zh]').forEach(function (el) { el.setAttribute('aria-label', el.getAttribute('data-label-' + lang())); });
     document.querySelectorAll('[data-alt-zh]').forEach(function (el) { el.alt = el.getAttribute('data-alt-' + lang()); });
     var languageButton = document.getElementById('language-toggle'); text(languageButton, lang() === 'zh' ? 'EN' : '中'); languageButton.setAttribute('aria-label', lang() === 'zh' ? 'Switch to English' : '切换为中文');
@@ -215,8 +235,8 @@
     if (savingData()) { pendingScene = null; pauseAll(); cancelAnimations(); }
     syncPreferences();
   });
-  document.addEventListener('visibilitychange', function () { if (document.hidden) { pendingScene = null; pauseAll(); cancelAnimations(); } else reconcilePlayback(); });
-  window.addEventListener('pagehide', function () { pageActive = false; pendingScene = null; pauseAll(); cancelAnimations(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) { pendingScene = null; pauseAll(); cancelAnimations(); syncPlayback(); } else reconcilePlayback(); });
+  window.addEventListener('pagehide', function () { pageActive = false; pendingScene = null; pauseAll(); cancelAnimations(); syncPlayback(); });
   window.addEventListener('pageshow', function () { pageActive = true; reconcilePlayback(); });
   if (observesVisibility) {
     var observer = new IntersectionObserver(function (entries) {

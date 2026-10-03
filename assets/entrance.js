@@ -30,7 +30,7 @@
       }, { threshold: 0 });
       observer.observe(hero);
     }
-    timer = setTimeout(finish, 2000);
+    timer = setTimeout(finish, 1400);
   } else finish();
   document.addEventListener('orbit:preferenceschange', respectPreferences);
   document.addEventListener('focusin', function (event) {
