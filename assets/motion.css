@@ -8,7 +8,7 @@
 .hero-explore-link:active {transform:scale(.98);transition-duration:100ms}
 .text-button:active,.transport-button:active,.chapter:active { transform:scale(.97); transition-duration:100ms; }
 .button>span:last-child,.feature-arrow,.chapter svg { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
-.chapter-indicator { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
+.chapter-indicator { transition:transform 220ms cubic-bezier(.22,1,.36,1); }
 .faq-plus { transition:transform 160ms cubic-bezier(.22,1,.36,1); }
 /* The browser owns both open and close interpolation. Unsupported engines keep
    native details behavior, without a measured-height JavaScript fallback. */
@@ -17,9 +17,10 @@
   .faq-list details::details-content {
     block-size:0;
     overflow:clip;
-    transition:block-size 180ms cubic-bezier(.22,1,.36,1),content-visibility 180ms allow-discrete;
+    transition:block-size 220ms cubic-bezier(.22,1,.36,1),content-visibility 220ms allow-discrete;
   }
   .faq-list details[open]::details-content { block-size:auto; }
+  .faq-list details:has(summary:focus-visible)::details-content { transition:none; }
 }
 @media(hover:hover) and (pointer:fine) {
   .button:hover>span:last-child,.feature-links a:hover .feature-arrow { transform:translate(2px,-2px); }
@@ -27,41 +28,61 @@
 }
 html.motion-ready [data-reveal] {
   opacity:0;
-  transform:translateY(16px);
-  transition:opacity 360ms ease,transform 480ms cubic-bezier(.22,1,.36,1);
+  transform:translateY(10px);
+  transition:opacity 320ms cubic-bezier(.22,1,.36,1),transform 420ms cubic-bezier(.22,1,.36,1);
 }
 html.motion-ready [data-reveal].is-revealed { opacity:1; transform:none; }
 html.motion-ready [data-reveal].reveal-static { transform:none; }
 html.motion-ready [data-reveal].reveal-immediate,
 html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transition:none; }
-/* Entry lives inside the scroll layers, so the two gestures never fight. */
+/* Start with the first styled paint. The deferred controller observes these
+   finite animations without restarting them. Entry stays inside scroll layers. */
 @keyframes orbit-arrive {
-  from { opacity:0; transform:translateY(10px); }
+  from { opacity:0; transform:translateY(8px); }
   to { opacity:1; transform:none; }
 }
 @keyframes orbit-unfold {
-  from { opacity:0; transform:translate(calc(var(--orbit-width) * var(--slot-x) * -.85),calc(44svh - var(--orbit-height) * var(--slot-y))) rotate(-20deg) scale(.9); }
+  from { opacity:0; transform:translate(calc(var(--slot-x) * -24px),clamp(14px,calc(24px - var(--slot-y) * 6px),28px)) rotate(calc(var(--turn) * -.35)) scale(.96); }
   to { opacity:1; transform:none; }
 }
 @keyframes horizon-arrive {
-  from { opacity:.2; transform:translateY(18svh); }
+  from { opacity:.65; transform:translateY(36px); }
   to { opacity:1; transform:none; }
 }
 @keyframes orbit-letter {
-  from { opacity:0; transform:translateY(18px) rotate(-7deg) scale(.94); }
+  from { opacity:0; transform:translateY(12px) rotate(-4deg) scale(.98); }
   to { opacity:1; transform:none; }
 }
-:root[data-entry="running"] .intro-app>span { animation:orbit-unfold 860ms var(--delay) cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .horizon-surface { animation:horizon-arrive 1050ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .wordmark-o { animation:orbit-letter 680ms 140ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .wordmark-tail { animation:orbit-arrive 600ms 250ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .hero-description { animation:orbit-arrive 520ms 410ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .hero-definition { animation:orbit-arrive 500ms 490ms cubic-bezier(.22,1,.36,1) both; }
-:root[data-entry="running"] .hero-actions,:root[data-entry="running"] .platform-note { animation:orbit-arrive 460ms 590ms cubic-bezier(.22,1,.36,1) both; }
-.site-header {transition:opacity 220ms ease,transform 280ms cubic-bezier(.22,1,.36,1)}
+:root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 760ms calc(var(--delay) * .6) cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 900ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-o { animation:orbit-letter 700ms 60ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-tail { animation:orbit-arrive 660ms 110ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 480ms 180ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 460ms 240ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .hero-actions,:root.js:not([data-entry="complete"]) .platform-note { animation:orbit-arrive 460ms 300ms cubic-bezier(.22,1,.36,1) both; }
+/* A focused action is usable immediately while decorative siblings settle. */
+:root.js:not([data-entry="complete"]) .hero-actions:focus-within { animation:none; }
+.site-header {transition:opacity 200ms cubic-bezier(.22,1,.36,1),transform 240ms cubic-bezier(.22,1,.36,1)}
 .site-header:has(:focus-visible) {transition:none}
 .menu-toggle>span:before,.menu-toggle>span:after { transition:transform 200ms cubic-bezier(.22,1,.36,1); }
-.site-header[data-menu-open="true"] nav { animation:orbit-arrive 180ms ease both; }
+@media(max-width:640px) {
+  @supports (transition-behavior:allow-discrete) {
+    .js .site-header nav {
+      opacity:0;
+      transform:translateY(-4px);
+      pointer-events:none;
+      transition:opacity 160ms cubic-bezier(.22,1,.36,1),transform 200ms cubic-bezier(.22,1,.36,1),display 200ms allow-discrete;
+    }
+    .js .site-header[data-menu-open="true"] nav { opacity:1; transform:none; pointer-events:auto; }
+    @starting-style {
+      .js .site-header[data-menu-open="true"] nav { opacity:0; transform:translateY(-4px); }
+    }
+    .js .site-header nav:has(:focus-visible) { transition:none; }
+  }
+}
+.button:focus-visible,.text-button:focus-visible,.transport-button:focus-visible,.chapter:focus-visible,
+.hero-explore-link:focus-visible,.faq-list summary:focus-visible .faq-plus,
+.menu-toggle:focus-visible>span:before,.menu-toggle:focus-visible>span:after { transition:none; }
 .card-link>span:last-child { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
 @media(hover:hover) and (pointer:fine) {
   .card-link:hover>span:last-child { transform:translate(2px,-2px); }

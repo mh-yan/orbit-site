@@ -17,8 +17,9 @@
     if (observer) observer.disconnect();
   }
   function respectMotion() { if (reduce.matches || root.dataset.motion === 'off') revealAll(); }
-  // A future content change must not turn the native film into a moving layer.
-  reveals.forEach(function (element) { if (element.querySelector('video')) element.classList.add('reveal-static'); });
+  // Large real recordings and screenshots remain anchored while their copy
+  // enters. Resampling a whole media card during scroll adds avoidable work.
+  reveals.forEach(function (element) { if (element.querySelector('video, img')) element.classList.add('reveal-static'); });
   if ('IntersectionObserver' in window) {
     observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
@@ -31,7 +32,11 @@
   document.addEventListener('focusin', function (event) {
     // Keyboard focus is never hidden behind an entrance, including a parent
     // reveal block. Revealing once also makes subsequent focus moves immediate.
-    reveals.forEach(function (element) { if (element.contains(event.target)) reveal(element, true); });
+    var element = event.target && event.target.closest ? event.target.closest('[data-reveal]') : null;
+    while (element) {
+      reveal(element, true);
+      element = element.parentElement && element.parentElement.closest('[data-reveal]');
+    }
   });
   document.addEventListener('orbit:preferenceschange', respectMotion);
   reduce.addEventListener('change', respectMotion);

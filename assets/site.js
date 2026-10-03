@@ -8,6 +8,7 @@
   var current = 0;
   var tabs = Array.from(document.querySelectorAll('[data-scene]'));
   var chapterList = document.querySelector('.chapter-list');
+  var chapterIndicator = document.querySelector('.chapter-indicator');
   var panels = Array.from(document.querySelectorAll('.scene'));
   var movies = Array.from(document.querySelectorAll('video'));
   var players = [];
@@ -20,9 +21,15 @@
   var pausedByUser = new WeakSet();
   var sceneAnimation, storyAnimation;
   var faqAnimations = new Map();
+  var handoff = OrbitCinema.createFrameHandoff(document.getElementById('cinema-stage'), function () {
+    return allowed() && pageActive && !document.hidden;
+  });
+  var nativeDetailsMotion = window.CSS && typeof window.CSS.supports === 'function'
+    && window.CSS.supports('interpolate-size: allow-keywords') && window.CSS.supports('selector(::details-content)');
   function lang() { return root.dataset.lang === 'en' ? 'en' : 'zh'; }
   function t(zh, en) { return lang() === 'zh' ? zh : en; }
   function text(element, value) { if (element.textContent !== value) element.textContent = value; }
+  function attribute(element, name, value) { if (element.getAttribute(name) !== value) element.setAttribute(name, value); }
   function savingData() { return !!(connection && connection.saveData); }
   function allowed() { return userMotion && !reduce.matches && !savingData(); }
   function activeVideo() { return panels[current].querySelector('video'); }
@@ -39,7 +46,7 @@
       if (movie.dataset.src === video.dataset.src) { if (paused) pausedByUser.add(movie); else pausedByUser.delete(movie); }
     });
   }
-  function userPause(video) { markPause(video, true); playerFor(video).pause(); syncPlayback(); }
+  function userPause(video) { markPause(video, true); playerFor(video).pause(); handoff.clear(); syncPlayback(); }
   function save() { try { localStorage.setItem('orbit-site-preferences-v3', JSON.stringify({ lang: lang(), motion: userMotion })); } catch (_) {} }
   function pauseAll(except) { players.forEach(function (player) { if (player.video !== except) player.pause(); }); }
   function requestPlayback(video, restart) {
@@ -65,6 +72,7 @@
     sceneAnimation = storyAnimation = null;
     faqAnimations.forEach(function (animation) { animation.cancel(); });
     faqAnimations.clear();
+    handoff.clear();
   }
   function syncPlayback() {
     var video = activeVideo();
@@ -72,10 +80,10 @@
     var requested = !!(pendingScene && pendingScene.video === video);
     var engaged = running || requested;
     text(document.getElementById('transport-icon'), engaged ? 'Ⅱ' : '▷');
-    playButton.setAttribute('aria-label', engaged ? t('暂停当前章节', 'Pause current chapter') : t('播放当前章节', 'Play current chapter'));
-    playButton.setAttribute('aria-pressed', String(engaged));
-    playButton.setAttribute('aria-controls', video.id);
-    document.getElementById('cinema-player').setAttribute('aria-busy', String(requested || (running && video.readyState < 3)));
+    attribute(playButton, 'aria-label', engaged ? t('暂停当前章节', 'Pause current chapter') : t('播放当前章节', 'Play current chapter'));
+    attribute(playButton, 'aria-pressed', String(engaged));
+    attribute(playButton, 'aria-controls', video.id);
+    attribute(document.getElementById('cinema-player'), 'aria-busy', String(requested || (running && video.readyState < 3)));
   }
   function makePlayer(video) {
     video.loop = true;
@@ -83,37 +91,92 @@
     var fallback = recording.querySelector('.film-fallback');
     var errorBox = recording.querySelector('.film-error');
     var gate = OrbitCinema.createRequestGate();
-    var failed = false, loaded = false;
-    function pause() { gate.invalidate(); video.pause(); }
+    var failed = false, loaded = false, wanted = false;
+    var frameCallback = null, frameTimer = 0, frameTicket = null;
+    function cancelFrameWatch() {
+      if (frameCallback !== null && typeof video.cancelVideoFrameCallback === 'function') video.cancelVideoFrameCallback(frameCallback);
+      if (frameTimer) window.clearTimeout(frameTimer);
+      frameCallback = null; frameTimer = 0; frameTicket = null;
+    }
+    function owns(ticket) { return wanted && gate.accepts(ticket) && video === activeVideo() && isVisible(video); }
+    function pause() { wanted = false; gate.invalidate(); cancelFrameWatch(); video.pause(); }
     function translateError() { if (failed) text(errorBox, t('这段视频暂时无法播放。点击播放重试，或切换其他演示。', 'This recording could not load. Try again or choose another chapter.')); }
     function fail(error, ticket) {
       if ((ticket !== undefined && !gate.accepts(ticket)) || (error && error.name === 'AbortError')) return;
       if (error && error.name === 'NotAllowedError') { markPause(video, true); pause(); syncPlayback(); return; }
       markPause(video, true); pause(); failed = true;
+      recording.dataset.frameReady = 'false';
       video.hidden = true; fallback.hidden = !!(fallback.complete && fallback.naturalWidth === 0); errorBox.hidden = false;
-      translateError(); syncPlayback();
+      handoff.release(video); translateError(); syncPlayback();
+    }
+    function presentFrame(ticket) {
+      if (!owns(ticket) || video.paused || video.seeking) return;
+      cancelFrameWatch();
+      failed = false; video.hidden = false; fallback.hidden = true; errorBox.hidden = true;
+      recording.dataset.frameReady = 'true';
+      handoff.release(video); syncPlayback();
+    }
+    function watchFirstFrame(ticket) {
+      cancelFrameWatch(); frameTicket = ticket;
+      if (typeof video.requestVideoFrameCallback === 'function') {
+        frameCallback = video.requestVideoFrameCallback(function () {
+          if (frameTicket !== ticket || !gate.accepts(ticket)) return;
+          frameCallback = null;
+          presentFrame(ticket);
+        });
+      }
+      // One watchdog handles engines that defer a frame callback after seek or
+      // backgrounding. Media events take over if data is still unavailable.
+      if (typeof video.readyState === 'number') frameTimer = window.setTimeout(function () {
+        if (frameTicket !== ticket || !gate.accepts(ticket)) return;
+        frameTimer = 0;
+        if (video.readyState >= 2) presentFrame(ticket);
+      }, 700);
     }
     function play(restart) {
+      if (!isVisible(video)) return;
       pendingScene = null; pauseAll(video);
+      if (wanted && !video.paused && !restart) { syncPlayback(); return; }
+      var ticket = gate.begin(), promise;
+      wanted = true;
+      // This existing real recording poster covers decoder/seek setup. It is
+      // removed only after a frame belongs to the current playback request.
+      if (!loaded || failed || restart || recording.dataset.frameReady !== 'true') {
+        fallback.hidden = !!(fallback.complete && fallback.naturalWidth === 0);
+        recording.dataset.frameReady = 'false';
+      }
+      video.hidden = false; errorBox.hidden = true;
       // Keep the real source lazy, including under Save Data and reduced motion.
       if (!loaded) { video.src = video.dataset.src; loaded = true; video.load(); }
       else if (failed || video.error || video.networkState === 3) video.load();
       if (restart || video.ended) { try { video.currentTime = 0; } catch (_) {} }
-      var ticket = gate.begin(), promise;
+      if (!gate.accepts(ticket)) return;
+      watchFirstFrame(ticket);
       try { promise = video.play(); } catch (error) { fail(error, ticket); return; }
       if (promise && promise.catch) promise.catch(function (error) { fail(error, ticket); });
       syncPlayback();
     }
     video.addEventListener('error', function () { if (loaded && video.error) fail(video.error); });
     fallback.addEventListener('error', function () { fallback.hidden = true; });
-    video.addEventListener('pause', function () { if (video.paused) gate.invalidate(); syncPlayback(); });
+    video.addEventListener('pause', function () {
+      if (video.paused) { wanted = false; gate.invalidate(); cancelFrameWatch(); }
+      syncPlayback();
+    });
     video.addEventListener('playing', function () {
-      if (video.paused || !pageActive || document.hidden) return;
-      failed = false; video.hidden = false; fallback.hidden = true; errorBox.hidden = true; syncPlayback();
+      // Native events are queued independently of play() promises. A delayed
+      // event from a hidden or cancelled chapter must never revive its pixels.
+      if (!wanted || video.paused) { if (!wanted && !video.paused) pause(); return; }
+      if (!isVisible(video) || video !== activeVideo()) { pause(); return; }
+      if (typeof video.requestVideoFrameCallback !== 'function' && frameTicket !== null) presentFrame(frameTicket);
+      else syncPlayback();
     });
     video.addEventListener('play', syncPlayback);
     video.addEventListener('ended', syncPlayback);
     ['loadstart', 'loadeddata', 'waiting', 'stalled', 'canplay'].forEach(function (event) { video.addEventListener(event, syncPlayback); });
+    ['loadeddata', 'canplay', 'seeked'].forEach(function (event) { video.addEventListener(event, function () {
+      if (frameTicket === null || !wanted || video.readyState < 2) return;
+      if (typeof video.requestVideoFrameCallback !== 'function' || (!frameTimer && frameCallback === null)) presentFrame(frameTicket);
+    }); });
     return { video: video, play: play, pause: pause, translateError: translateError };
   }
   movies.forEach(function (video) { players.push(makePlayer(video)); });
@@ -123,7 +186,16 @@
     if (animate) storyAnimation = enter(story, { opacity: 0.65, transform: 'translateY(4px)' }, 180, storyAnimation, true);
     else { if (storyAnimation) storyAnimation.cancel(); storyAnimation = null; }
   }
-  function revealChapter(tab) {
+  function syncChapterIndicator(animate) {
+    var tab = tabs[current];
+    if (!chapterIndicator || !tab || !(tab.offsetWidth > 0)) return;
+    // Fixed-size decoration: only its transform changes. Labels never scale,
+    // and a new choice retargets the existing CSS transition immediately.
+    chapterList.dataset.tabMotion = animate && allowed() ? 'on' : 'instant';
+    chapterIndicator.style.transform = 'translateX(' + tab.offsetLeft + 'px) scaleX(' + (tab.offsetWidth / 100) + ')';
+    chapterList.dataset.indicator = 'ready';
+  }
+  function revealChapter(tab, animate) {
     var width = chapterList.clientWidth;
     if (!width || chapterList.scrollWidth <= width || typeof chapterList.scrollTo !== 'function') return;
     var currentScroll = chapterList.scrollLeft;
@@ -132,42 +204,49 @@
     destination = Math.max(0, Math.min(chapterList.scrollWidth - width, destination));
     // Only the chapter strip moves. Card links retain the page's native anchor
     // scroll, and a newer selection replaces any unfinished horizontal scroll.
-    chapterList.scrollTo({ left: destination, behavior: allowed() && Math.abs(destination - currentScroll) > 1 ? 'smooth' : 'auto' });
+    chapterList.scrollTo({ left: destination, behavior: animate && allowed() && Math.abs(destination - currentScroll) > 1 ? 'smooth' : 'instant' });
   }
-  function selectScene(index, play) {
+  function selectScene(index, play, animate) {
     if (!Number.isInteger(index) || index < 0 || index >= panels.length) return;
-    var old = current;
+    var old = current, fromVideo = activeVideo();
+    var nextVideo = panels[index].querySelector('video');
+    var changes = old !== index;
+    var handedOff = changes && animate && isVisible(fromVideo) && handoff.capture(fromVideo, nextVideo);
+    if (!handedOff) handoff.clear();
     if (panels[old].contains(document.activeElement) && old !== index) tabs[index].focus({ preventScroll: true });
     current = index; pendingScene = null; pauseAll();
     if (sceneAnimation) sceneAnimation.cancel();
     sceneAnimation = null;
     chapterList.style.setProperty('--chapter-index', String(index));
     tabs.forEach(function (tab, i) { tab.classList.toggle('is-active', i === index); tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; });
-    if (play) revealChapter(tabs[index]);
+    syncChapterIndicator(animate);
+    if (play) revealChapter(tabs[index], animate);
     // Selection is synchronous: no delayed callback can revive an old chapter.
     panels.forEach(function (panel, i) {
       panel.inert = i !== index; panel.hidden = i !== index;
+      panel.tabIndex = i === index ? 0 : -1;
       panel.setAttribute('aria-hidden', String(i !== index));
       panel.classList.toggle('is-visible', i === index);
     });
     var panel = panels[index];
-    if (play && index !== old) sceneAnimation = enter(panel, { opacity: 0.72, transform: 'none' }, 180);
+    if (animate && changes && !handedOff) sceneAnimation = enter(panel, { opacity: 0.72, transform: 'none' }, 180);
     text(document.getElementById('scene-caption'), panel.getAttribute('data-scene-title-' + lang()));
     document.getElementById('cinema-open').href = activeVideo().dataset.src;
-    syncStory(play && index !== old); syncPlayback();
+    syncStory(animate && changes); syncPlayback();
     if (play) {
       var requested = activeVideo(); markPause(requested, false); requestPlayback(requested, true);
     }
   }
   tabs.forEach(function (tab, index) {
-    tab.addEventListener('click', function () { selectScene(index, true); });
+    tab.addEventListener('click', function (event) { selectScene(index, true, event.detail !== 0); });
     tab.addEventListener('keydown', function (event) {
       if (event.altKey || event.metaKey || event.ctrlKey) return;
       var next = OrbitCinema.nextIndex(index, event.key, tabs.length, chapterList.getAttribute('aria-orientation') || 'horizontal');
       if (next === null) return;
       event.preventDefault();
       tabs.forEach(function (button, i) { button.tabIndex = i === next ? 0 : -1; });
-      tabs[next].focus();
+      tabs[next].focus({ preventScroll: true });
+      revealChapter(tabs[next], false);
     });
   });
   function toggle(video) {
@@ -178,16 +257,18 @@
   }
   playButton.addEventListener('click', function () { toggle(activeVideo()); });
   function sceneIndex(name) { return panels.findIndex(function (panel) { return panel.id === 'scene-' + name; }); }
-  document.getElementById('editor-jump').addEventListener('click', function () { selectScene(sceneIndex('editor'), true); });
-  document.querySelectorAll('[data-show-scene]').forEach(function (link) { link.addEventListener('click', function () { selectScene(sceneIndex(link.dataset.showScene), true); }); });
+  document.getElementById('editor-jump').addEventListener('click', function (event) { selectScene(sceneIndex('editor'), true, event.detail !== 0); });
+  document.querySelectorAll('[data-show-scene]').forEach(function (link) { link.addEventListener('click', function (event) { selectScene(sceneIndex(link.dataset.showScene), true, event.detail !== 0); }); });
   document.querySelectorAll('.faq-list details').forEach(function (details) {
-    var answer = details.querySelector('.faq-answer');
+    var answer = details.querySelector('.faq-answer'), keyboard = false;
     if (!answer) return;
+    var summary = details.querySelector('summary');
+    if (summary) summary.addEventListener('click', function (event) { keyboard = event.detail === 0; });
     details.addEventListener('toggle', function () {
       var previous = faqAnimations.get(details);
       if (previous) previous.cancel();
       faqAnimations.delete(details);
-      if (!details.open) return;
+      if (!details.open || keyboard || nativeDetailsMotion) return;
       // Native details owns layout, focus and open state. This only reveals the
       // answer; closing never waits for an animation or a height measurement.
       var animation = enter(answer, { opacity: 0.7, transform: 'translateY(-3px)' }, 160);
@@ -225,6 +306,7 @@
     previousMotion = motion;
     text(document.getElementById('scene-caption'), panels[current].getAttribute('data-scene-title-' + lang()));
     syncStory(false); players.forEach(function (player) { player.translateError(); }); syncPlayback();
+    syncChapterIndicator(false);
     if (resume) reconcilePlayback();
     if (typeof CustomEvent === 'function') document.dispatchEvent(new CustomEvent('orbit:preferenceschange'));
   }
@@ -251,6 +333,6 @@
     }, { threshold: [0, 0.05, 0.6] });
     movies.forEach(function (video) { observer.observe(video.closest('.recording')); });
   }
-  window.OrbitSiteMedia = { preferences: { reducedMotion: reduce } };
+  window.OrbitSiteMedia = { preferences: { reducedMotion: reduce }, syncChapterIndicator: syncChapterIndicator };
   selectScene(0, false); syncPreferences();
 })();
