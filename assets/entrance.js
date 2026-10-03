@@ -12,7 +12,7 @@
   var handedOff = false;
   var animations = [];
   var initialScroll = window.scrollY;
-  var entryNames = /^(orbit-arrive|orbit-unfold|horizon-arrive|orbit-o-arrive|orbit-o-depth|orbit-trace|orbit-word-reveal|crest-unfold|crest-centre|crest-settle)$/;
+  var entryNames = /^(orbit-arrive|orbit-unfold|horizon-arrive|orbit-o-arrive|orbit-o-depth|orbit-word-reveal|crest-unfold|crest-centre|crest-settle)$/;
   var navigation = performance.getEntriesByType('navigation')[0];
   var restoringHistory = navigation && navigation.type === 'back_forward';
   function finish() {

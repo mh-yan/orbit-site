@@ -68,24 +68,16 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
   28% { opacity:1; }
   to { opacity:1; transform:none; }
 }
-@keyframes orbit-trace {
-  from { opacity:0; transform:rotate(-12deg) scale(.78); }
-  22% { opacity:.5; }
-  56% { opacity:.32; }
-  to { opacity:0; transform:rotate(10deg) scale(1.05); }
-}
 @keyframes orbit-word-reveal {
   from { opacity:0; transform:translate(-.06em,.38em) rotate(2deg); }
   to { opacity:1; transform:none; }
 }
 .wordmark-o-glyph { transform-origin:50% 65%; }
-.wordmark-o-trace { transform-origin:50% 50%; }
 .horizon-surface { transform-origin:50% 0; }
 :root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 800ms calc(410ms + var(--delay)) cubic-bezier(.22,1,.36,1) both; }
 :root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 1450ms 80ms cubic-bezier(.22,1,.36,1) both; }
 :root.js:not([data-entry="complete"]) .wordmark-o { animation:orbit-o-arrive 1040ms cubic-bezier(.65,0,.35,1) both; }
 :root.js:not([data-entry="complete"]) .wordmark-o-glyph { animation:orbit-o-depth 1020ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-o-trace { animation:orbit-trace 1180ms 30ms cubic-bezier(.4,0,.2,1) both; }
 :root.js:not([data-entry="complete"]) .wordmark-tail { animation:orbit-word-reveal 620ms 650ms cubic-bezier(.22,1,.36,1) both; }
 :root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 620ms 950ms cubic-bezier(.22,1,.36,1) both; }
 :root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 540ms 1070ms cubic-bezier(.22,1,.36,1) both; }
