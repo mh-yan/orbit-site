@@ -52,7 +52,7 @@ html[data-lang="zh"] [data-en],html[data-lang="en"] [data-zh] {display:none!impo
 .hero-intro {position:relative;height:86svh;min-height:660px;max-height:820px}
 .hero-scenery {position:absolute;inset:0;height:100%;overflow:clip;pointer-events:none;z-index:-1}
 .hero-horizon {position:absolute;top:78%;left:-25%;width:150%;height:calc(22% + 64px);overflow:clip;contain:paint;transform-origin:50% 0}
-.horizon-surface {width:100%;height:960px;height:150svh;min-height:960px;border-radius:50% 50% 0 0 / 38% 38% 0 0;background:linear-gradient(180deg,#f0f1ee, #fafaf9 min(14svh,144px));border-top:1px solid #d9ddd4;box-shadow:inset 0 2px 3px #fff}
+.horizon-surface {width:100%;height:clamp(960px,86vw,1440px);border-radius:50% 50% 0 0 / 38% 38% 0 0;background:linear-gradient(180deg,#f0f1ee, #fafaf9 min(14svh,144px));border-top:1px solid #d9ddd4;box-shadow:inset 0 2px 3px #fff}
 .hero-copy {position:absolute;top:clamp(218px,32svh,296px);left:0;width:100%;padding-inline:24px;z-index:1}
 .intro-orbit {--orbit-width:min(1120px,calc(100vw - 64px));--orbit-height:min(32svh,300px);position:absolute;top:min(6svh,56px);left:50%;width:var(--orbit-width);height:min(36svh,338px);transform:translateX(-50%);pointer-events:none}
 .intro-app {--slot-x:var(--x);--slot-y:var(--y);position:absolute;top:50%;left:50%;width:clamp(110px,10.4vw,148px);aspect-ratio:1;transform:translate(-50%,-50%) translate(calc(var(--orbit-width) * var(--slot-x)),calc(var(--orbit-height) * var(--slot-y))) rotate(var(--turn))}
