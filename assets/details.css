@@ -279,3 +279,10 @@
 .setup-feature .editor-detail-wheel img {width:309.68%;left:-70.97%;top:-69.36%}
 .setup-feature .editor-detail-list img {width:446.51%;left:-346.51%;top:-19.36%}
 @media(max-width:640px) {.editor-details {gap:8px;padding:13px 9px}.editor-detail-wheel {border-radius:8px}.editor-detail-list {border-radius:6px}}
+
+/* A phone keeps the wheel as the hero; dense inspector text stays in the recording. */
+@media(max-width:640px) {
+ .editor-details {display:block;padding:22px 18px}
+ .editor-detail-wheel {width:min(100%,300px);margin-inline:auto}
+ .editor-detail-list {display:none}
+}
