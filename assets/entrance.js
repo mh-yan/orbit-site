@@ -12,7 +12,7 @@
   var handedOff = false;
   var animations = [];
   var initialScroll = window.scrollY;
-  var entryNames = /^(orbit-arrive|orbit-unfold|horizon-arrive|orbit-o-arrive|orbit-o-depth|orbit-word-reveal|crest-unfold|crest-centre|crest-settle)$/;
+  var entryNames = /^(orbit-arrive|orbit-unfold|horizon-arrive|orbit-brand-arrive|orbit-ribbon-settle)$/;
   var navigation = performance.getEntriesByType('navigation')[0];
   var restoringHistory = navigation && navigation.type === 'back_forward';
   function finish() {
@@ -103,7 +103,7 @@
         })).then(function () { if (running) finish(); });
       } else finish();
     } catch (_) {
-      // This only guards older engines. It outlasts the 1750ms final layer;
+      // This only guards older engines. It outlasts the 1310ms final layer;
       // CSS still owns interpolation and nothing waits for this timer.
       timer = setTimeout(finish, 2200);
     }

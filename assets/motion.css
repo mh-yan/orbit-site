@@ -35,53 +35,46 @@ html.motion-ready [data-reveal].is-revealed { opacity:1; transform:none; }
 html.motion-ready [data-reveal].reveal-static { transform:none; }
 html.motion-ready [data-reveal].reveal-immediate,
 html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transition:none; }
-/* One first-arrival phrase: the centred O finds its place, its orbit opens,
-   then the reading and action layers land. The longest layer ends at 1750ms.
+/* One first-arrival phrase: the complete lockup stays anchored while its
+   own ribbon turns into place. Supporting apps settle after the brand.
+   The last app settles at 1310ms; the action is ready sooner, at 1100ms.
    These finite animations start at the first styled paint; their controller
    only observes completion or accelerates a handoff from the current frame.
    Outer app/copy/horizon layers remain exclusively owned by journey.js. */
 @keyframes orbit-arrive {
-  from { opacity:0; transform:translateY(14px); }
+  from { opacity:0; transform:translateY(8px); }
   to { opacity:1; transform:none; }
 }
 @keyframes orbit-unfold {
   from {
     opacity:0;
-    transform:translate(calc(var(--slot-x) * -88px),clamp(20px,calc(42px - var(--slot-y) * 12px),46px)) rotate(calc(var(--turn) * -1.1)) scale(.91);
-  }
-  58% {
-    opacity:1;
-    transform:translate(calc(var(--slot-x) * -22px),3px) rotate(calc(var(--turn) * -.16)) scale(.988);
+    transform:translate(calc(var(--slot-x) * -24px),12px) rotate(calc(var(--turn) * -.32)) scale(.97);
   }
   to { opacity:1; transform:none; }
 }
 @keyframes horizon-arrive {
-  from { opacity:.28; transform:translateY(24px) scaleX(.82); }
+  from { opacity:0; transform:translateY(10px) scaleX(.96); }
   to { opacity:1; transform:none; }
 }
-@keyframes orbit-o-arrive {
-  0%,12% { transform:translate(.78em,-.045em); }
+@keyframes orbit-brand-arrive {
+  from { opacity:0; transform:translateY(10px); }
+  to { opacity:1; transform:none; }
+}
+@keyframes orbit-ribbon-settle {
+  from { transform:rotate(-26deg); }
   to { transform:none; }
 }
-@keyframes orbit-o-depth {
-  from { opacity:.88; transform:perspective(600px) rotateY(-22deg) rotateZ(-5deg) scale(.94); }
-  28% { opacity:1; }
-  to { opacity:1; transform:none; }
-}
-@keyframes orbit-word-reveal {
-  from { opacity:0; transform:translate(-.06em,.38em) rotate(2deg); }
-  to { opacity:1; transform:none; }
-}
-.wordmark-o-glyph { transform-origin:50% 65%; }
+/* All three ribbon surfaces share an origin and one timeline. The circular
+   body is stationary; front/rear occlusion and the approved artwork survive. */
+.wordmark-ribbon { transform-box:view-box; transform-origin:50% 50%; }
 .horizon-surface { transform-origin:50% 0; }
-:root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 800ms calc(410ms + var(--delay)) cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 1450ms 80ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-o { animation:orbit-o-arrive 1040ms cubic-bezier(.65,0,.35,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-o-glyph { animation:orbit-o-depth 1020ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .wordmark-tail { animation:orbit-word-reveal 620ms 650ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 620ms 950ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 540ms 1070ms cubic-bezier(.22,1,.36,1) both; }
-:root.js:not([data-entry="complete"]) .hero-actions,:root.js:not([data-entry="complete"]) .platform-note { animation:orbit-arrive 530ms 1220ms cubic-bezier(.22,1,.36,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-art { animation:orbit-brand-arrive 780ms 30ms cubic-bezier(.23,1,.32,1) both; }
+:root.js:not([data-entry="complete"]) .wordmark-ribbon { animation:orbit-ribbon-settle 1040ms 40ms cubic-bezier(.65,0,.2,1) both; }
+:root.js:not([data-entry="complete"]) .intro-app>span { animation:orbit-unfold 760ms calc(80ms + var(--delay)) cubic-bezier(.23,1,.32,1) both; }
+:root.js:not([data-entry="complete"]) .horizon-surface { animation:horizon-arrive 1100ms 150ms cubic-bezier(.23,1,.32,1) both; }
+:root.js:not([data-entry="complete"]) .hero-description { animation:orbit-arrive 680ms 300ms cubic-bezier(.23,1,.32,1) both; }
+:root.js:not([data-entry="complete"]) .hero-definition { animation:orbit-arrive 620ms 400ms cubic-bezier(.23,1,.32,1) both; }
+:root.js:not([data-entry="complete"]) .hero-actions,:root.js:not([data-entry="complete"]) .platform-note { animation:orbit-arrive 600ms 500ms cubic-bezier(.23,1,.32,1) both; }
 /* A focused or pressed action becomes visible synchronously; decorative
    siblings can continue without delaying focus, scrolling, or activation. */
 :root.js:not([data-entry="complete"]) .hero-actions:focus-within,
@@ -112,8 +105,8 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
 @media(hover:hover) and (pointer:fine) {
   .card-link:hover>span:last-child { transform:translate(2px,-2px); }
 }
-/* The CTA's small orbit unfolds inside the existing first-paint entrance.
-   It is settled by the same entry guard and never runs an idle loop. */
+/* The action arrives as a complete button. Its small mark only responds to
+   intentional hover; a second logo sequence would compete with the title. */
 .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
   transform-box:view-box;
   transform-origin:50% 50%;
@@ -122,28 +115,6 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
 .hero-explore-link .hero-link-icon svg.hero-orbit-crest {
   transform:none;
   transition:transform 240ms cubic-bezier(.22,1,.36,1);
-}
-@keyframes crest-unfold {
-  from { opacity:.2; transform:rotate(40deg) scale(.82,.9); }
-  to { opacity:1; transform:none; }
-}
-@keyframes crest-centre {
-  from { opacity:.3; transform:scale(.82); }
-  to { opacity:1; transform:none; }
-}
-@keyframes crest-settle {
-  from { opacity:0; transform:rotate(-38deg); }
-  35% { opacity:1; }
-  to { opacity:1; transform:none; }
-}
-:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-track {
-  animation:crest-unfold 420ms 1260ms cubic-bezier(.22,1,.36,1) both;
-}
-:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-planet {
-  animation:crest-centre 360ms 1260ms cubic-bezier(.22,1,.36,1) both;
-}
-:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-dot {
-  animation:crest-settle 350ms 1400ms cubic-bezier(.22,1,.36,1) both;
 }
 @media(hover:hover) and (pointer:fine) {
   :root.js .hero-explore-link:hover:not(:focus-visible) .hero-link-icon svg.hero-orbit-crest {
