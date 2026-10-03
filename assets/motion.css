@@ -87,6 +87,133 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
 @media(hover:hover) and (pointer:fine) {
   .card-link:hover>span:last-child { transform:translate(2px,-2px); }
 }
+/* The CTA's small orbit unfolds inside the existing first-paint entrance.
+   It is settled by the same entry guard and never runs an idle loop. */
+.hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
+  transform-box:view-box;
+  transform-origin:50% 50%;
+}
+.hero-orbit-crest .crest-track { transform:none; }
+.hero-explore-link .hero-link-icon svg.hero-orbit-crest {
+  transform:none;
+  transition:transform 240ms cubic-bezier(.22,1,.36,1);
+}
+@keyframes crest-unfold {
+  from { opacity:.2; transform:rotate(40deg) scale(.82,.9); }
+  to { opacity:1; transform:none; }
+}
+@keyframes crest-centre {
+  from { opacity:.3; transform:scale(.82); }
+  to { opacity:1; transform:none; }
+}
+@keyframes crest-settle {
+  from { opacity:0; transform:rotate(-38deg); }
+  35% { opacity:1; }
+  to { opacity:1; transform:none; }
+}
+:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-track {
+  animation:crest-unfold 640ms 170ms cubic-bezier(.22,1,.36,1) both;
+}
+:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-planet {
+  animation:crest-centre 560ms 170ms cubic-bezier(.22,1,.36,1) both;
+}
+:root.js:not([data-entry="complete"]) .hero-orbit-crest .crest-dot {
+  animation:crest-settle 460ms 350ms cubic-bezier(.22,1,.36,1) both;
+}
+@media(hover:hover) and (pointer:fine) {
+  :root.js .hero-explore-link:hover:not(:focus-visible) .hero-link-icon svg.hero-orbit-crest {
+    transform:rotate(-9deg);
+  }
+}
+.hero-explore-link:focus-visible .hero-link-icon svg.hero-orbit-crest {
+  transform:none;
+  transition:none;
+}
+.hero-explore-link:focus-visible .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
+  animation:none!important;
+}
+
+/* Copy enters in reading order while native media and its surrounding card
+   stay anchored. All state still comes from the existing one-shot observer. */
+html.motion-ready [data-reveal].orbit-staged {
+  opacity:1;
+  transform:none;
+  transition:none;
+}
+html.motion-ready .orbit-staged .orbit-stage-item {
+  opacity:0;
+  transform:translateY(var(--orbit-stage-y,8px));
+}
+:root.motion-ready[data-orbital-motion="on"] .orbit-staged .orbit-stage-item {
+  transition:opacity 360ms cubic-bezier(.22,1,.36,1) var(--orbit-stage-delay,0ms),
+    transform 580ms cubic-bezier(.22,1,.36,1) var(--orbit-stage-delay,0ms);
+}
+html.motion-ready .orbit-staged.is-revealed .orbit-stage-item {
+  opacity:1;
+  transform:none;
+}
+html.motion-ready .orbit-staged .capability-list svg {
+  transform:rotate(-12deg) scale(.9);
+  transform-origin:50% 50%;
+}
+:root.motion-ready[data-orbital-motion="on"] .orbit-staged .capability-list svg {
+  transition:transform 480ms cubic-bezier(.22,1,.36,1) var(--orbit-stage-delay,0ms);
+}
+html.motion-ready .orbit-staged.is-revealed .capability-list svg { transform:none; }
+/* Extend the existing rule to introduce the next section, with no extra gap. */
+.subwheel-feature.orbit-staged { position:relative; border-top-color:transparent; }
+.subwheel-feature.orbit-staged::before {
+  content:"";
+  position:absolute;
+  inset:-1px 0 auto;
+  height:1px;
+  background:var(--line);
+  transform-origin:0 50%;
+}
+html.motion-ready .subwheel-feature.orbit-staged::before {
+  opacity:.35;
+  transform:scaleX(.12);
+}
+:root.motion-ready[data-orbital-motion="on"] .subwheel-feature.orbit-staged::before {
+  transition:transform 700ms cubic-bezier(.22,1,.36,1),opacity 360ms ease;
+}
+html.motion-ready .subwheel-feature.orbit-staged.is-revealed::before {
+  opacity:1;
+  transform:none;
+}
+html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .orbit-stage-item,
+html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .capability-list svg,
+html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-within)::before {
+  opacity:1;
+  transform:none;
+  transition:none!important;
+}
+
+/* A selected glyph comes to rest. CSS transitions can retarget immediately
+   while scene selection and keyboard navigation remain synchronous. */
+:root.js .chapter svg { transform:translateY(1px) scale(.94); }
+:root[data-orbital-motion="on"] .chapter svg {
+  transition:transform 200ms cubic-bezier(.22,1,.36,1);
+}
+:root.js .chapter.is-active svg { transform:none; }
+@media(hover:hover) and (pointer:fine) {
+  :root.js .chapter:not(.is-active):hover:not(:focus-visible) svg { transform:scale(.97); }
+}
+:root[data-orbital-motion="on"] .chapter-list[data-tab-motion="instant"] .chapter svg,
+:root[data-orbital-motion="on"] .chapter-list:has(:focus-visible) .chapter svg { transition:none; }
+:root.js .chapter:focus-visible svg { transform:none; transition:none; }
+
+/* Backgrounding the page finishes these finite decorations. The guard only
+   observes lifecycle/preferences; it never samples scrolling or geometry. */
+:root[data-orbital-motion="off"] .orbit-stage-item,
+:root[data-orbital-motion="off"] .orbit-staged .capability-list svg,
+:root[data-orbital-motion="off"] .subwheel-feature.orbit-staged::before,
+:root[data-orbital-motion="off"] .chapter svg,
+:root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon svg.hero-orbit-crest { transition:none; }
+:root[data-orbital-motion="off"] .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) { animation:none!important; }
+:root[data-motion="off"] .orbit-stage-item,
+:root[data-motion="off"] .orbit-staged .capability-list svg,
+:root[data-motion="off"] .subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
 :root[data-motion="off"] *,
 :root[data-motion="off"] *:before,
 :root[data-motion="off"] *:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
@@ -106,4 +233,8 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
   .faq-list details::details-content { transition:none!important; }
   [data-reveal] { opacity:1!important; transform:none!important; }
   .button,.hero-explore-link,.hero-link-icon svg,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
+  .orbit-stage-item,.orbit-staged .capability-list svg,.subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
+}
+@media(forced-colors:active) {
+  .subwheel-feature.orbit-staged::before { background:CanvasText; }
 }

@@ -33,21 +33,28 @@
     ]],
     ['.hero-copy', [
       { opacity: 1, transform: 'translateY(0)', offset: 0 },
-      { opacity: 1, transform: 'translateY(0)', offset: .1, easing: 'cubic-bezier(.4,0,.6,1)' },
-      { opacity: 0, transform: 'translateY(-24px)', offset: .78 },
+      { opacity: 1, transform: 'translateY(0)', offset: .2, easing: 'cubic-bezier(.4,0,.6,1)' },
+      { opacity: 0, transform: 'translateY(-24px)', offset: .9 },
       { opacity: 0, transform: 'translateY(-24px)', offset: 1 }
-    ]],
-    ['.intro-orbit', [
-      { opacity: 1, transform: 'translateX(-50%) translateY(0)', offset: 0 },
-      { opacity: 1, transform: 'translateX(-50%) translateY(0)', offset: .08, easing: 'cubic-bezier(.4,0,.6,1)' },
-      { opacity: 0, transform: 'translateX(-50%) translateY(-18px)', offset: .84 },
-      { opacity: 0, transform: 'translateX(-50%) translateY(-18px)', offset: 1 }
     ]]
   ];
+  // Each app returns a short distance toward its own orbit, instead of fading
+  // the entire constellation as a flat layer. This sits outside the initial
+  // CSS entrance, so scrolling can reverse without restarting that entrance.
+  var appPosition = 'translate(-50%,-50%) translate(calc(var(--orbit-width) * var(--slot-x)),calc(var(--orbit-height) * var(--slot-y))) rotate(var(--turn))';
+  hero.querySelectorAll('.intro-app').forEach(function (_, index) {
+    var settled = appPosition + ' translate(calc(var(--slot-x) * -14px),calc(var(--slot-y) * -10px - 8px)) scale(.98)';
+    definitions.push(['.intro-app:nth-child(' + (index + 1) + ')', [
+      { opacity: 1, transform: appPosition, offset: 0 },
+      { opacity: 1, transform: appPosition, offset: .1 + index * .015, easing: 'cubic-bezier(.4,0,.6,1)' },
+      { opacity: 0, transform: settled, offset: .66 + index * .022 },
+      { opacity: 0, transform: settled, offset: 1 }
+    ]]);
+  });
   function measure() {
     var bounds = hero.getBoundingClientRect();
     start = bounds.top + window.scrollY;
-    // The hero occupies one viewport in normal flow. There is no pinned,
+    // The hero occupies its content-sized stage in normal flow. There is no pinned,
     // empty interval before the native recordings enter the viewport.
     distance = Math.max(1, bounds.height);
     viewportWidth = window.innerWidth;

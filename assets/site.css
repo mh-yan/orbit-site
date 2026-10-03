@@ -49,12 +49,12 @@ html[data-lang="zh"] [data-en],html[data-lang="en"] [data-zh] {display:none!impo
 /* The hero is a brand introduction. Real recordings begin in the next section. */
 .hero {position:relative;text-align:center}
 .hero-stage {position:relative;isolation:isolate}
-.hero-intro {position:relative;height:100svh;min-height:660px}
-.hero-scenery {position:absolute;inset:0 0 auto;height:100svh;min-height:660px;overflow:clip;pointer-events:none;z-index:-1}
-.hero-horizon {position:absolute;top:68%;left:-25%;width:150%;height:calc(32% + 64px);overflow:clip;contain:paint;transform-origin:50% 0}
-.horizon-surface {width:100%;height:960px;height:150svh;min-height:960px;border-radius:50% 50% 0 0 / 38% 38% 0 0;background:linear-gradient(180deg,#f0f1ee, #fafaf9 38%);border-top:1px solid #d9ddd4;box-shadow:inset 0 2px 3px #fff}
-.hero-copy {position:absolute;top:32svh;left:0;width:100%;padding-inline:24px;z-index:1}
-.intro-orbit {--orbit-width:min(1120px,calc(100vw - 64px));--orbit-height:32svh;position:absolute;top:6svh;left:50%;width:var(--orbit-width);height:36svh;transform:translateX(-50%);pointer-events:none}
+.hero-intro {position:relative;height:86svh;min-height:660px;max-height:820px}
+.hero-scenery {position:absolute;inset:0;height:100%;overflow:clip;pointer-events:none;z-index:-1}
+.hero-horizon {position:absolute;top:78%;left:-25%;width:150%;height:calc(22% + 64px);overflow:clip;contain:paint;transform-origin:50% 0}
+.horizon-surface {width:100%;height:960px;height:150svh;min-height:960px;border-radius:50% 50% 0 0 / 38% 38% 0 0;background:linear-gradient(180deg,#f0f1ee, #fafaf9 min(14svh,144px));border-top:1px solid #d9ddd4;box-shadow:inset 0 2px 3px #fff}
+.hero-copy {position:absolute;top:clamp(218px,32svh,296px);left:0;width:100%;padding-inline:24px;z-index:1}
+.intro-orbit {--orbit-width:min(1120px,calc(100vw - 64px));--orbit-height:min(32svh,300px);position:absolute;top:min(6svh,56px);left:50%;width:var(--orbit-width);height:min(36svh,338px);transform:translateX(-50%);pointer-events:none}
 .intro-app {--slot-x:var(--x);--slot-y:var(--y);position:absolute;top:50%;left:50%;width:clamp(110px,10.4vw,148px);aspect-ratio:1;transform:translate(-50%,-50%) translate(calc(var(--orbit-width) * var(--slot-x)),calc(var(--orbit-height) * var(--slot-y))) rotate(var(--turn))}
 .intro-app-middle {width:clamp(88px,8.3vw,116px)} .intro-app-small {width:clamp(74px,6.8vw,96px)}
 .intro-app>span {display:grid;place-items:center;width:100%;height:100%;border-radius:50%;background:linear-gradient(145deg,#fff,#f2f3ef);box-shadow:0 12px 22px -18px #30342640,inset 0 1px 1px #fff;border:1px solid #e5e7e0}
@@ -67,15 +67,15 @@ html[data-lang="zh"] [data-en],html[data-lang="en"] [data-zh] {display:none!impo
 .hero-actions {display:flex;justify-content:center;margin-top:24px}
 .hero-explore-link {display:inline-flex;align-items:center;gap:12px;min-height:50px;padding:7px 21px 7px 7px;border:1px solid #d8dcd2;border-radius:999px;background:#fff;color:var(--ink);font-size:14px;font-weight:500;line-height:1.4;white-space:nowrap;box-shadow:0 3px 8px -5px #20211f30}
 .hero-link-icon {display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:var(--ink);color:#fff}
-.hero-link-icon svg {width:18px;height:18px}
+.hero-link-icon svg {width:23px;height:23px;overflow:visible}
 .platform-note {display:none}
 .product-journey {position:relative}
 /* One cinema, six complete actions. Chapters and prose stay outside the footage. */
-.cinema-section {padding-top:44px;padding-bottom:72px}
+.cinema-section {padding-top:30px;padding-bottom:40px}
 .section-heading {max-width:840px;margin:0 auto 34px;text-align:center}
 .section-heading h2 {font-size:clamp(34px,3.7vw,50px);font-weight:600;line-height:1.2;letter-spacing:-.05em}
 .section-description {color:var(--muted);font-size:15px;line-height:1.75;margin-top:18px}
-.cinema-layout {display:grid;grid-template-columns:minmax(0,3.3fr) minmax(220px,1fr);gap:28px 36px;align-items:center}
+.cinema-layout {display:grid;grid-template-columns:minmax(0,2.5fr) minmax(260px,1fr);gap:24px 36px;align-items:center}
 .chapter-list {position:relative;grid-column:1/-1;grid-row:1;display:flex;justify-content:center;gap:4px;padding:5px;border-radius:16px;background:#eff0ec;overflow-x:auto;scrollbar-width:none}
 .chapter-list::-webkit-scrollbar {display:none}
 .chapter {display:flex;align-items:center;justify-content:center;gap:9px;flex:1 0 auto;min-height:48px;padding:10px 16px;border-radius:12px;color:var(--muted);background:transparent;text-align:center;font-size:14px;line-height:1.4;white-space:nowrap}
@@ -88,7 +88,7 @@ html[data-lang="zh"] [data-en],html[data-lang="en"] [data-zh] {display:none!impo
 .chapter-list[data-indicator="ready"] .chapter.is-active {background:transparent;box-shadow:none}
 .chapter-list[data-tab-motion="instant"] .chapter-indicator {transition:none}
 .cinema-player {grid-column:1;grid-row:2;width:100%;min-width:0}
-.cinema-stage {position:relative;aspect-ratio:4/3;width:100%;max-height:min(620px,50svh);overflow:hidden;isolation:isolate;contain:paint;background:#fff;border:1px solid #e3e5de;border-radius:24px;box-shadow:0 20px 40px -32px #20221d35}
+.cinema-stage {position:relative;aspect-ratio:4/3;width:100%;overflow:hidden;isolation:isolate;contain:paint;background:#fff;border:1px solid #e3e5de;border-radius:24px;box-shadow:0 20px 40px -32px #20221d35}
 .scene {position:absolute;inset:0;opacity:0;pointer-events:none;outline-offset:-5px!important}
 .scene.is-visible {z-index:1;opacity:1;pointer-events:auto}
 .scene video,.scene>.film-fallback {width:100%;height:100%;object-fit:contain}
@@ -218,16 +218,16 @@ html:not(.js) .scene:first-child {opacity:1}
  .site-header .mobile-release {display:flex}
  html:not(.js) .site-header {position:relative;inset:auto;padding:12px}
  html:not(.js) .site-header nav {display:flex;position:static;order:3;flex-basis:100%;border:0;box-shadow:none}
- .hero-intro,.hero-scenery {min-height:660px}
- .hero-copy {top:35svh;padding-inline:20px}
- .intro-orbit {--orbit-width:calc(100vw - 40px);--orbit-height:24svh;top:5svh;height:33svh}
+ .hero-intro {height:88svh;min-height:660px;max-height:820px}
+ .hero-copy {top:min(35svh,326px);padding-inline:20px}
+ .intro-orbit {--orbit-width:calc(100vw - 40px);--orbit-height:min(24svh,224px);top:min(5svh,46px);height:min(33svh,307px)}
  .intro-app {--slot-x:var(--mx);--slot-y:var(--my);width:66px}.intro-app-middle {width:54px}.intro-app-small {width:46px}
  .hero .wordmark {font-size:clamp(110px,29vw,170px)}
  .hero-description {font-size:21px;margin-top:22px}
  .hero-definition {font-size:13px;margin-top:8px}
  .hero-actions {margin-top:22px}.hero-explore-link {font-size:13px}
- .hero-horizon {top:72%;left:-50%;width:200%}
- .cinema-section {padding-top:44px;padding-bottom:45px}
+ .hero-horizon {top:78%;left:-50%;width:200%}
+ .cinema-section {padding-top:28px;padding-bottom:32px}
  .section-heading {margin-bottom:26px}.section-heading h2 {font-size:34px;line-height:1.25}
  .section-description {font-size:14px;margin-top:15px}
  .chapter-list {margin-inline:-4px;padding:5px;scroll-padding:10px}
@@ -236,7 +236,7 @@ html:not(.js) .scene:first-child {opacity:1}
  .cinema-layout {gap:18px}.cinema-stage {border-radius:18px}
  .stage-caption {gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px}
  #scene-caption {min-width:135px}.stage-caption .text-button {font-size:12px}
- .scene-story {display:block;min-height:145px;padding:0 2px}
+ .scene-story {display:block;min-height:130px;padding:0 2px}
  #scene-headline {font-size:29px;margin-top:8px}#scene-description {font-size:14px;margin-top:12px;line-height:1.8}
  .section {padding-block:58px}
  .footer-wordmark {font-size:130px;padding:28px 0 22px}
@@ -250,7 +250,7 @@ html:not(.js) .scene:first-child {opacity:1}
  .section-heading h2 {font-size:30px}.stage-caption {gap:5px}
 }
 @media(max-height:600px) and (min-width:641px) {
- .hero-intro,.hero-scenery {min-height:610px}
+ .hero-intro {min-height:610px}
  .hero-copy {top:180px}.hero .wordmark {font-size:116px}
  .intro-orbit {top:5px;height:180px;--orbit-height:180px}
  .intro-app {width:74px}.intro-app-middle {width:62px}.intro-app-small {width:50px}
