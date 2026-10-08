@@ -136,29 +136,7 @@ html.motion-ready .orbit-staged.is-revealed .orbit-stage-item {
   opacity:1;
   transform:none;
 }
-/* Extend the existing rule to introduce the next section, with no extra gap. */
-.subwheel-feature.orbit-staged { position:relative; border-top-color:transparent; }
-.subwheel-feature.orbit-staged::before {
-  content:"";
-  position:absolute;
-  inset:-1px 0 auto;
-  height:1px;
-  background:var(--line);
-  transform-origin:0 50%;
-}
-html.motion-ready .subwheel-feature.orbit-staged::before {
-  opacity:.35;
-  transform:scaleX(.12);
-}
-:root.motion-ready[data-orbital-motion="on"] .subwheel-feature.orbit-staged::before {
-  transition:transform 700ms cubic-bezier(.22,1,.36,1),opacity 360ms ease;
-}
-html.motion-ready .subwheel-feature.orbit-staged.is-revealed::before {
-  opacity:1;
-  transform:none;
-}
-html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .orbit-stage-item,
-html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-within)::before {
+html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .orbit-stage-item {
   opacity:1;
   transform:none;
   transition:none!important;
@@ -181,11 +159,9 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
 /* Backgrounding the page finishes these finite decorations. The guard only
    observes lifecycle/preferences; it never samples scrolling or geometry. */
 :root[data-orbital-motion="off"] .orbit-stage-item,
-:root[data-orbital-motion="off"] .subwheel-feature.orbit-staged::before,
 :root[data-orbital-motion="off"] .chapter svg,
 :root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon img { transition:none; }
-:root[data-motion="off"] .orbit-stage-item,
-:root[data-motion="off"] .subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
+:root[data-motion="off"] .orbit-stage-item { opacity:1!important; transform:none!important; }
 :root[data-motion="off"] *,
 :root[data-motion="off"] *:before,
 :root[data-motion="off"] *:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
@@ -205,8 +181,5 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
   .faq-list details::details-content { transition:none!important; }
   [data-reveal] { opacity:1!important; transform:none!important; }
   .button,.hero-explore-link,.hero-link-icon img,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
-  .orbit-stage-item,.subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
-}
-@media(forced-colors:active) {
-  .subwheel-feature.orbit-staged::before { background:CanvasText; }
+  .orbit-stage-item { opacity:1!important; transform:none!important; }
 }
