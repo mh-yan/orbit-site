@@ -54,7 +54,7 @@
 .detail-link > span[aria-hidden] {flex-shrink:0;font-size:18px;transition:transform 160ms var(--ease)}
 .subwheel-copy .detail-link {margin-top:12px}
 
-/* Pictures stay anchored; only the short captions join the finite section reveal. */
+/* Image-led groups. Their finite entrance is defined in motion.css. */
 .capabilities {display:block;padding-top:var(--section-space)}
 .capability-intro h3 {font-size:clamp(28px,2.6vw,36px)}
 .capability-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin:28px 0 0;padding:0;list-style:none}

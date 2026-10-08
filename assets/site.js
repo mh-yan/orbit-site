@@ -180,10 +180,10 @@
     return { video: video, play: play, pause: pause, translateError: translateError };
   }
   movies.forEach(function (video) { players.push(makePlayer(video)); });
-  function syncStory(animate) {
+  function syncStory(animate, direction) {
     var panel = panels[current], story = document.getElementById('scene-story');
     ['headline', 'description', 'meta'].forEach(function (key) { text(document.getElementById('scene-' + key), panel.getAttribute('data-' + key + '-' + lang())); });
-    if (animate) storyAnimation = enter(story, { opacity: 0.65, transform: 'translateY(4px)' }, 180, storyAnimation, true);
+    if (animate) storyAnimation = enter(story, { opacity: 0.25, transform: 'translateX(' + ((direction || 1) * 12) + 'px)' }, 280, storyAnimation, true);
     else { if (storyAnimation) storyAnimation.cancel(); storyAnimation = null; }
   }
   function syncChapterIndicator(animate) {
@@ -232,7 +232,7 @@
     if (animate && changes && !handedOff) sceneAnimation = enter(panel, { opacity: 0.72, transform: 'none' }, 180);
     text(document.getElementById('scene-caption'), panel.getAttribute('data-scene-title-' + lang()));
     document.getElementById('cinema-open').href = activeVideo().dataset.src;
-    syncStory(animate && changes); syncPlayback();
+    syncStory(animate && changes, index > old ? 1 : -1); syncPlayback();
     if (play) {
       var requested = activeVideo(); markPause(requested, false); requestPlayback(requested, true);
     }

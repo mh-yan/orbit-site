@@ -156,9 +156,102 @@ html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .orbit-stage
 :root[data-orbital-motion="on"] .chapter-list:has(:focus-visible) .chapter svg { transition:none; }
 :root.js .chapter:focus-visible svg { transform:none; transition:none; }
 
+/* The cinema opens like a viewing window. Only its crop changes: native
+   recordings retain their pixel size and never acquire a moving camera. */
+html.motion-ready [data-reveal="cinema"],
+html.motion-ready [data-reveal="editor"],
+html.motion-ready [data-reveal="unfold"],
+html.motion-ready [data-reveal="brand"] {
+  opacity:1; transform:none; transition:none;
+}
+html.motion-ready [data-reveal="cinema"] .cinema-stage {
+  clip-path:inset(0 round var(--radius)); opacity:1;
+  transition:clip-path 680ms cubic-bezier(.16,1,.3,1),opacity 420ms ease;
+}
+html.motion-ready [data-reveal="cinema"]:not(.is-revealed) .cinema-stage {
+  clip-path:inset(8% 5% round 48px); opacity:.28;
+}
+html.motion-ready [data-reveal="cinema"] .stage-caption {
+  transition:opacity 300ms ease 140ms,transform 440ms var(--ease) 140ms;
+}
+html.motion-ready [data-reveal="cinema"]:not(.is-revealed) .stage-caption {
+  opacity:0; transform:translateY(8px);
+}
+/* Wheel and contents meet in their actual editor layout; no zooming of
+   cropped screenshots, and no transform on the link's focus outline. */
+html.motion-ready [data-reveal="editor"] :is(.editor-detail-wheel,.editor-detail-list) {
+  transition:opacity 340ms ease,transform 560ms cubic-bezier(.16,1,.3,1);
+}
+html.motion-ready [data-reveal="editor"] .editor-detail-list {transition-delay:70ms}
+html.motion-ready [data-reveal="editor"]:not(.is-revealed) .editor-detail-wheel {
+  opacity:.25; transform:translateX(-18px);
+}
+html.motion-ready [data-reveal="editor"]:not(.is-revealed) .editor-detail-list {
+  opacity:.25; transform:translateX(18px);
+}
+/* Uncover the child group in its direction of expansion, keeping the real
+   image stationary. This is a single reveal, never a scroll-linked filter. */
+html.motion-ready [data-reveal="unfold"] img {
+  clip-path:inset(0); opacity:1;
+  transition:clip-path 620ms cubic-bezier(.16,1,.3,1),opacity 440ms ease;
+}
+html.motion-ready [data-reveal="unfold"]:not(.is-revealed) img {
+  clip-path:inset(0 32% 0 0); opacity:.25;
+}
+/* Each image is observed separately, so mobile cards enter when they are
+   actually seen. Only the two following columns carry a short stagger. */
+html.motion-ready :is(.capability-list,.comfort-grid) [data-reveal="gallery"] {
+  transition:opacity 400ms ease var(--gallery-delay,0ms),
+    transform 600ms cubic-bezier(.16,1,.3,1) var(--gallery-delay,0ms);
+}
+html.motion-ready :is(.capability-list,.comfort-grid) [data-reveal="gallery"]:not(.is-revealed) {
+  opacity:0; transform:translateY(22px);
+}
+[data-reveal="gallery"]:nth-child(3n+2) {--gallery-delay:65ms}
+[data-reveal="gallery"]:nth-child(3n+3) {--gallery-delay:130ms}
+html.motion-ready [data-reveal="brand"] img {
+  transition:opacity 400ms ease,transform 620ms cubic-bezier(.16,1,.3,1);
+}
+html.motion-ready [data-reveal="brand"]:not(.is-revealed) img {
+  opacity:.2; transform:translateY(14px) scale(.94);
+}
+/* One shared selection surface connects Hold, Aim and Release. No timers or
+   measurements are needed; a new choice retargets the running transition. */
+@supports selector(:has(*)) {
+  .gesture-feature .gesture-step-controls {
+    position:relative; isolation:isolate; display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+  }
+  .gesture-feature .gesture-step-controls::before {
+    content:""; position:absolute; inset:3px auto 3px 3px;
+    width:calc((100% - 6px)/3); border-radius:9px; background:#fff;
+    transform:translateX(0); transition:transform 260ms cubic-bezier(.22,1,.36,1);
+  }
+  .gesture-feature .gesture-step-controls:has([data-step="aim"][aria-pressed="true"])::before {transform:translateX(100%)}
+  .gesture-feature .gesture-step-controls:has([data-step="release"][aria-pressed="true"])::before {transform:translateX(200%)}
+  .gesture-feature .gesture-step {z-index:1; min-width:0; transition:color 140ms ease,background-color 140ms ease}
+  .gesture-feature .gesture-step[aria-pressed="true"] {background:transparent}
+  .gesture-feature .gesture-step-controls:has(:focus-visible)::before {transition:none}
+}
+@media(max-width:640px) {
+  [data-reveal="gallery"] {--gallery-delay:0ms!important}
+  html.motion-ready [data-reveal="cinema"] .cinema-stage {clip-path:inset(0 round 18px)}
+}
+/* Keyboard focus, reduced motion, and backgrounding finish the presentation
+   synchronously. These descendants are not hidden by the generic reveal guard. */
+html.motion-ready [data-reveal]:is(.reveal-immediate,:focus-within) :is(.cinema-stage,.stage-caption,.editor-detail-wheel,.editor-detail-list,.subwheel-media>img,.release-art>img),
+:root[data-motion="off"] :is(.cinema-stage,.stage-caption,.editor-detail-wheel,.editor-detail-list,.subwheel-media>img,.release-art>img) {
+  opacity:1!important; transform:none!important; clip-path:none!important; transition:none!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  html.motion-ready :is(.cinema-stage,.stage-caption,.editor-detail-wheel,.editor-detail-list,.subwheel-media>img,.release-art>img) {opacity:1!important;transform:none!important;clip-path:none!important;transition:none!important}
+}
+
 /* Backgrounding the page finishes these finite decorations. The guard only
    observes lifecycle/preferences; it never samples scrolling or geometry. */
 :root[data-orbital-motion="off"] .orbit-stage-item,
+:root[data-orbital-motion="off"] [data-reveal] *,
+:root[data-orbital-motion="off"] [data-reveal="gallery"],
+:root[data-orbital-motion="off"] .gesture-step-controls::before,
 :root[data-orbital-motion="off"] .chapter svg,
 :root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon img { transition:none; }
 :root[data-motion="off"] .orbit-stage-item { opacity:1!important; transform:none!important; }

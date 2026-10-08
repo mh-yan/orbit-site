@@ -33,7 +33,7 @@
       if (!canAnimate() || typeof outgoing.animate !== 'function') { clear(); return; }
       var ticket = gate.begin();
       animation = outgoing.animate([{ opacity: opacity }, { opacity: 0 }], {
-        duration: 160, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards'
+        duration: 260, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'forwards'
       });
       animation.onfinish = function () { if (gate.accepts(ticket)) clear(); };
     }

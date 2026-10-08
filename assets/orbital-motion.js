@@ -1,5 +1,5 @@
 /* Layer the existing section entrances without adding another scroll owner.
-   Only small copy/glyphs move; recordings and screenshots stay anchored. */
+   Small copy moves separately from the finite image transitions in motion.css. */
 (function () {
   'use strict';
   var root = document.documentElement;
@@ -10,8 +10,8 @@
     ['.detail-heading', [['h2', 0, 0, 12]]],
     ['.setup-feature', [['.detail-copy h3', 0, 0, 10], ['.detail-copy > p', 45, 0, 6]]],
     ['.subwheel-feature', [['.detail-overline', 0, 0, 5], ['h3', 45, 0, 12], ['.subwheel-copy > p:not(.detail-overline)', 90, 0, 6], ['.detail-link', 125, 0, 5]]],
-    ['.capabilities', [['h3', 0, 0, 8], ['.capability-title', 45, 35, 6], ['.license-note', 180, 0, 4]]],
-    ['.detail-quiet', [['.quiet-heading', 0, 0, 10], ['.comfort-copy h3', 45, 45, 6], ['.comfort-copy p', 80, 45, 4]]],
+    ['.capabilities', [['h3', 0, 0, 8], ['.license-note', 180, 0, 4]]],
+    ['.detail-quiet', [['.quiet-heading', 0, 0, 10]]],
     ['.faq-intro', [['h2', 0, 0, 12]]],
     ['.detail-closing', [['.release-state', 0, 0, 5], ['h2', 45, 0, 12], ['.release-status', 90, 0, 6], ['.detail-link', 125, 0, 5], ['.release-price', 65, 0, 8], ['.release-trial', 110, 0, 5], ['.release-billing', 140, 0, 4]]]
   ];
