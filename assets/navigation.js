@@ -9,6 +9,7 @@
   var open = false;
   var layoutFrame = 0, pageActive = true;
   var marker = document.getElementById('nav-reveal-point');
+  if (!header || !button || !nav) return;
   function syncElevation(entries) {
     var entry = entries && entries[0];
     var bounds = entry && entry.boundingClientRect ? entry.boundingClientRect : marker && marker.getBoundingClientRect();
@@ -59,18 +60,24 @@
   nav.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () {
       if (!open) return;
-      var target = document.querySelector(link.getAttribute('href'));
+      var href = link.getAttribute('href');
+      var target = null;
+      if (href && href.charAt(0) === '#') {
+        try { target = document.getElementById(decodeURIComponent(href.slice(1))); } catch (_) {}
+      }
       setOpen(false, false);
       if (target) { target.setAttribute('tabindex', '-1'); target.focus({ preventScroll: true }); }
     });
   });
   function syncTabOverflow() {
+    if (!tabs) return;
     var start = String(tabs.scrollLeft > 3);
     var end = String(tabs.scrollWidth - tabs.clientWidth - tabs.scrollLeft > 3);
     if (tabs.dataset.overflowStart !== start) tabs.dataset.overflowStart = start;
     if (tabs.dataset.overflowEnd !== end) tabs.dataset.overflowEnd = end;
   }
   function syncTabOrientation() {
+    if (!tabs) return;
     var direction = window.getComputedStyle(tabs).flexDirection;
     tabs.setAttribute('aria-orientation', direction === 'column' || direction === 'column-reverse' ? 'vertical' : 'horizontal');
     syncTabOverflow();
@@ -93,9 +100,9 @@
   }
   mobile.addEventListener('change', syncLayout);
   window.addEventListener('resize', requestLayout, { passive: true });
-  tabs.addEventListener('scroll', syncTabOverflow, { passive: true });
+  if (tabs) tabs.addEventListener('scroll', syncTabOverflow, { passive: true });
   document.addEventListener('orbit:preferenceschange', function () { label(); requestLayout(); });
-  if ('ResizeObserver' in window) new ResizeObserver(requestLayout).observe(tabs);
+  if (tabs && 'ResizeObserver' in window) new ResizeObserver(requestLayout).observe(tabs);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(requestLayout);
   if (marker && 'IntersectionObserver' in window) {
     var elevationObserver = new IntersectionObserver(syncElevation, { threshold: 0 });

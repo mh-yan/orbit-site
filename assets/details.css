@@ -96,6 +96,13 @@
 .detail-closing h2 em {display:block;font-style:normal}
 .detail-closing .release-status {max-width:28em;color:var(--muted);font-size:13px;line-height:1.75;text-wrap:pretty}
 .detail-closing .detail-link {margin-top:10px;font-size:13px}
+.release-actions {display:flex;align-items:center;flex-wrap:wrap;gap:8px 20px;margin-top:20px}
+.release-actions .detail-link {margin-top:0}
+.release-actions .button {font-size:13px;padding-inline:20px}
+.footer-pages {display:flex;align-items:center;gap:22px}
+.footer-pages a {display:inline-flex;align-items:center;min-height:44px;color:var(--muted);font-size:13px}
+.detail-faq .faq-answer a {text-decoration:underline;text-underline-offset:4px}
+@media(max-width:640px) {.footer-pages {grid-row:3;grid-column:1 / -1}}
 .release-offer {min-width:0;padding:24px;border-radius:20px;background:#fafbf8}
 .release-price {display:flex;flex-direction:column;gap:10px}
 .release-price > span {color:var(--muted);font-size:13px;line-height:1.5}
