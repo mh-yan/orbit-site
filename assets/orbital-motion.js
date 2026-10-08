@@ -11,7 +11,7 @@
     ['.setup-feature', [['.detail-overline', 0, 0, 5], ['.detail-copy h3', 45, 0, 10], ['.detail-copy > p:not(.detail-overline)', 90, 0, 6]]],
     ['.subwheel-feature', [['.detail-overline', 0, 0, 5], ['h3', 45, 0, 12], ['.subwheel-copy > p:not(.detail-overline)', 90, 0, 6], ['.detail-link', 125, 0, 5]]],
     ['.capabilities', [['h3', 0, 0, 8], ['.capability-list li', 50, 35, 7], ['.license-note', 160, 0, 4]]],
-    ['.detail-quiet', [['.quiet-heading', 0, 0, 10], ['.quiet-list dt', 45, 45, 6], ['.quiet-list dd', 80, 45, 4]]],
+    ['.detail-quiet', [['.quiet-heading', 0, 0, 10], ['.comfort-copy h3', 45, 45, 6], ['.comfort-copy p', 80, 45, 4]]],
     ['.faq-intro', [['.eyebrow', 0, 0, 5], ['h2', 50, 0, 12]]],
     ['.detail-closing', [['.eyebrow', 0, 0, 5], ['h2', 45, 0, 12], ['.release-status', 90, 0, 6], ['.detail-link', 125, 0, 5], ['.release-price', 65, 0, 8], ['.release-trial', 110, 0, 5], ['.release-billing', 140, 0, 4]]]
   ];

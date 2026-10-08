@@ -4,7 +4,7 @@
 }
 .button:active { transform:scale(.98); transition-duration:100ms; }
 .hero-explore-link {transition:transform 180ms var(--ease),border-color 180ms ease}
-.hero-link-icon svg {transition:transform 180ms var(--ease)}
+.hero-link-icon img {transition:transform 180ms var(--ease)}
 .hero-explore-link:active {transform:scale(.98);transition-duration:100ms}
 .text-button:active,.transport-button:active,.chapter:active { transform:scale(.97); transition-duration:100ms; }
 .button>span:last-child,.feature-arrow,.chapter svg { transition:transform 180ms cubic-bezier(.22,1,.36,1); }
@@ -105,29 +105,16 @@ html.motion-ready [data-reveal]:focus-within { opacity:1; transform:none; transi
 @media(hover:hover) and (pointer:fine) {
   .card-link:hover>span:last-child { transform:translate(2px,-2px); }
 }
-/* The action arrives as a complete button. Its small mark only responds to
-   intentional hover; a second logo sequence would compete with the title. */
-.hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
-  transform-box:view-box;
-  transform-origin:50% 50%;
-}
-.hero-orbit-crest .crest-track { transform:none; }
-.hero-explore-link .hero-link-icon svg.hero-orbit-crest {
-  transform:none;
-  transition:transform 240ms cubic-bezier(.22,1,.36,1);
-}
+/* The original brand asset is shared with the navigation and footer.
+   Hover keeps its geometry and approved resting angle intact. */
 @media(hover:hover) and (pointer:fine) {
-  :root.js .hero-explore-link:hover:not(:focus-visible) .hero-link-icon svg.hero-orbit-crest {
-    transform:rotate(-9deg);
+  :root.js .hero-explore-link:hover:not(:focus-visible) .hero-link-icon img {
+    transform:scale(1.04);
   }
 }
-.hero-explore-link:focus-visible .hero-link-icon svg.hero-orbit-crest {
+.hero-explore-link:focus-visible .hero-link-icon img {
   transform:none;
   transition:none;
-}
-.hero-explore-link:focus-visible .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot),
-.hero-actions[data-entry-exposed="true"] .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) {
-  animation:none!important;
 }
 
 /* Copy enters in reading order while native media and its surrounding card
@@ -206,8 +193,7 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
 :root[data-orbital-motion="off"] .orbit-staged .capability-list svg,
 :root[data-orbital-motion="off"] .subwheel-feature.orbit-staged::before,
 :root[data-orbital-motion="off"] .chapter svg,
-:root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon svg.hero-orbit-crest { transition:none; }
-:root[data-orbital-motion="off"] .hero-orbit-crest :is(.crest-planet,.crest-track,.crest-dot) { animation:none!important; }
+:root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon img { transition:none; }
 :root[data-motion="off"] .orbit-stage-item,
 :root[data-motion="off"] .orbit-staged .capability-list svg,
 :root[data-motion="off"] .subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
@@ -218,7 +204,7 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
 :root[data-motion="off"] [data-reveal] { opacity:1!important; transform:none!important; }
 :root[data-motion="off"] .button,
 :root[data-motion="off"] .hero-explore-link,
-:root[data-motion="off"] .hero-link-icon svg,
+:root[data-motion="off"] .hero-link-icon img,
 :root[data-motion="off"] .text-button,
 :root[data-motion="off"] .transport-button,
 :root[data-motion="off"] .chapter,
@@ -229,7 +215,7 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
   *,*:before,*:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
   .faq-list details::details-content { transition:none!important; }
   [data-reveal] { opacity:1!important; transform:none!important; }
-  .button,.hero-explore-link,.hero-link-icon svg,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
+  .button,.hero-explore-link,.hero-link-icon img,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
   .orbit-stage-item,.orbit-staged .capability-list svg,.subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
 }
 @media(forced-colors:active) {
