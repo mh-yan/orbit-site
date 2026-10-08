@@ -136,14 +136,6 @@ html.motion-ready .orbit-staged.is-revealed .orbit-stage-item {
   opacity:1;
   transform:none;
 }
-html.motion-ready .orbit-staged .capability-list svg {
-  transform:rotate(-12deg) scale(.9);
-  transform-origin:50% 50%;
-}
-:root.motion-ready[data-orbital-motion="on"] .orbit-staged .capability-list svg {
-  transition:transform 480ms cubic-bezier(.22,1,.36,1) var(--orbit-stage-delay,0ms);
-}
-html.motion-ready .orbit-staged.is-revealed .capability-list svg { transform:none; }
 /* Extend the existing rule to introduce the next section, with no extra gap. */
 .subwheel-feature.orbit-staged { position:relative; border-top-color:transparent; }
 .subwheel-feature.orbit-staged::before {
@@ -166,7 +158,6 @@ html.motion-ready .subwheel-feature.orbit-staged.is-revealed::before {
   transform:none;
 }
 html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .orbit-stage-item,
-html.motion-ready .orbit-staged:is(.reveal-immediate,:focus-within) .capability-list svg,
 html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-within)::before {
   opacity:1;
   transform:none;
@@ -190,12 +181,10 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
 /* Backgrounding the page finishes these finite decorations. The guard only
    observes lifecycle/preferences; it never samples scrolling or geometry. */
 :root[data-orbital-motion="off"] .orbit-stage-item,
-:root[data-orbital-motion="off"] .orbit-staged .capability-list svg,
 :root[data-orbital-motion="off"] .subwheel-feature.orbit-staged::before,
 :root[data-orbital-motion="off"] .chapter svg,
 :root[data-orbital-motion="off"] .hero-explore-link .hero-link-icon img { transition:none; }
 :root[data-motion="off"] .orbit-stage-item,
-:root[data-motion="off"] .orbit-staged .capability-list svg,
 :root[data-motion="off"] .subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
 :root[data-motion="off"] *,
 :root[data-motion="off"] *:before,
@@ -216,7 +205,7 @@ html.motion-ready .subwheel-feature.orbit-staged:is(.reveal-immediate,:focus-wit
   .faq-list details::details-content { transition:none!important; }
   [data-reveal] { opacity:1!important; transform:none!important; }
   .button,.hero-explore-link,.hero-link-icon img,.text-button,.transport-button,.chapter,.chapter svg,.button>span:last-child,.feature-arrow { transform:none!important; }
-  .orbit-stage-item,.orbit-staged .capability-list svg,.subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
+  .orbit-stage-item,.subwheel-feature.orbit-staged::before { opacity:1!important; transform:none!important; }
 }
 @media(forced-colors:active) {
   .subwheel-feature.orbit-staged::before { background:CanvasText; }

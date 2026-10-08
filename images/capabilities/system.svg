@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" fill="none">
+<defs>
+<linearGradient id="paper" x1="210" y1="55" x2="408" y2="340" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset="1" stop-color="#f9faf7"/></linearGradient>
+<linearGradient id="dark" x1="210" y1="70" x2="460" y2="320" gradientUnits="userSpaceOnUse"><stop stop-color="#37393b"/><stop offset="1" stop-color="#202223"/></linearGradient>
+<filter id="shadow" x="-40%" y="-35%" width="180%" height="190%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#333b2d" flood-opacity=".10"/><feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#333b2d" flood-opacity=".04"/></filter>
+</defs><rect width="640" height="360" fill="#f3f4f1"/>
+<g transform="rotate(-4 313 178)"><g filter="url(#shadow)"><rect x="149" y="46" width="340" height="270" rx="29" fill="url(#paper)" stroke="#e0e4d8"/></g>
+<circle cx="197" cy="98" r="27" fill="#292d25"/>
+<path d="M196 83a16 16 0 1 0 16 19 18 18 0 0 1-16-19Z" fill="#fff"/>
+<path d="M247 93h114m-114 15h78" stroke="#d0d7c7" stroke-width="5" stroke-linecap="round"/>
+<path d="M174 143h291" stroke="#e4e8de"/>
+<circle cx="197" cy="187" r="8" stroke="#727b68" stroke-width="2.5"/>
+<path d="M197 171v-5m0 42v-5m16-16h5m-42 0h5m5-11-4-4m30 30-4-4m0-22 4-4m-30 30 4-4" stroke="#727b68" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="242" y="172" width="209" height="30" rx="15" fill="#e8ede2"/><rect x="242" y="172" width="145" height="30" rx="15" fill="#bcc8b0"/><circle cx="383" cy="187" r="17" fill="#fff" stroke="#d2daca"/>
+<path d="M181 243h7l11-8v25l-11-8h-7Z" stroke="#727b68" stroke-width="2.5" stroke-linejoin="round"/><path d="M207 239c6 5 6 12 0 17" stroke="#727b68" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="242" y="233" width="209" height="30" rx="15" fill="#e8ede2"/><rect x="242" y="233" width="93" height="30" rx="15" fill="#d0d9c6"/><circle cx="332" cy="248" r="17" fill="#fff" stroke="#d2daca"/>
+</g></svg>
